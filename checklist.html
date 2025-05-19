@@ -7,6 +7,648 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF5A5F;
+            --primary-light: #FF8A8F;
+            --primary-dark: #E63940;
+            --secondary: #00A699;
+            --secondary-light: #3CC1B7;
+            --text-dark: #222222;
+            --text-medium: #555555;
+            --text-light: #777777;
+            --border-light: #EEEEEE;
+            --bg-light: #FFFFFF;
+            --bg-off-white: #F8F8F8;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+            --animation-easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        
+        /* Packing checklist styles */
+        .packing-checklist {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: var(--bg-light);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .packing-checklist::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--secondary-light) 0%, rgba(0,166,153,0) 70%);
+            opacity: 0.1;
+            z-index: 0;
+            border-radius: 50%;
+        }
+        
+        .packing-checklist::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--primary-light) 0%, rgba(255,90,95,0) 70%);
+            opacity: 0.08;
+            z-index: 0;
+            border-radius: 50%;
+        }
+        
+        .checklist-header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .checklist-header h2 {
+            color: var(--text-dark);
+            font-size: 32px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+        }
+        
+        .checklist-header h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            margin: 15px auto 5px;
+            border-radius: 2px;
+        }
+        
+        .current-date {
+            color: var(--text-medium);
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            height: 12px;
+            background-color: var(--bg-off-white);
+            border-radius: 50px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 50px;
+            transition: width 0.6s var(--animation-easing);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, 
+                rgba(255,255,255,0.15) 0%, 
+                rgba(255,255,255,0.15) 30%, 
+                rgba(255,255,255,0.3) 50%, 
+                rgba(255,255,255,0.15) 70%, 
+                rgba(255,255,255,0.15) 100%);
+            transform: translateX(-100%);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .progress-text {
+            color: var(--text-medium);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            display: block;
+        }
+        
+        .trip-selector {
+            margin-top: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .trip-selector select {
+            padding: 12px 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 15px;
+            background-color: var(--bg-off-white);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 400px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .trip-selector select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.1);
+            outline: none;
+        }
+        
+        .checklist-categories {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .checklist-categories::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-btn {
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 50px;
+            background-color: var(--bg-off-white);
+            color: var(--text-medium);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: var(--primary);
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .category-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+            z-index: -1;
+        }
+        
+        .category-icon {
+            margin-right: 8px;
+        }
+        
+        .checklist-items {
+            position: relative;
+            z-index: 1;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px 5px;
+            padding-right: 10px;
+            margin-bottom: 25px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) var(--bg-off-white);
+        }
+        
+        .checklist-items::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .checklist-items::-webkit-scrollbar-track {
+            background: var(--bg-off-white);
+            border-radius: 10px;
+        }
+        
+        .checklist-items::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 10px;
+        }
+        
+        .checklist-item {
+            background-color: var(--bg-light);
+            border-radius: 15px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            transform-origin: center left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .checklist-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            border-radius: 2px 0 0 2px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .checklist-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .checklist-item:hover::before {
+            opacity: 1;
+        }
+        
+        .item-checkbox {
+            position: relative;
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .item-checkbox input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border-light);
+            border-radius: 6px;
+            background-color: var(--bg-light);
+            transition: all 0.3s ease;
+        }
+        
+        .item-checkbox:hover .checkmark {
+            border-color: var(--primary);
+        }
+        
+        .item-checkbox input[type="checkbox"]:checked ~ .checkmark {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .item-checkbox input[type="checkbox"]:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .item-checkbox .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .item-content {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+        
+        .item-checkbox input[type="checkbox"]:checked ~ .item-content .item-name {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+        
+        .item-category {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            border: none;
+            background: none;
+            font-size: 15px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+        }
+        
+        .action-btn:hover {
+            color: var(--primary);
+            background-color: rgba(255, 90, 95, 0.1);
+        }
+        
+        .delete-btn:hover {
+            color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .add-item-form {
+            display: flex;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            gap: 10px;
+        }
+        
+        #new-item-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 15px;
+            background-color: var(--bg-off-white);
+            transition: all 0.3s ease;
+        }
+        
+        #new-item-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.1);
+            outline: none;
+        }
+        
+        #item-category {
+            width: 140px;
+            padding: 14px 15px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 15px;
+            background-color: var(--bg-off-white);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        #item-category:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.1);
+            outline: none;
+        }
+        
+        #add-item-btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(255, 90, 95, 0.25);
+        }
+        
+        #add-item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 90, 95, 0.35);
+        }
+        
+        #add-item-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        #add-item-btn:hover::after {
+            opacity: 1;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 60px;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+        
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 90, 95, 0.25);
+        }
+        
+        .empty-state-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 90, 95, 0.35);
+        }
+        
+        /* Category badges */
+        .category-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        
+        .category-badge.essential {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        
+        .category-badge.clothing {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+        }
+        
+        .category-badge.toiletries {
+            background-color: rgba(155, 89, 182, 0.15);
+            color: #9b59b6;
+        }
+        
+        .category-badge.electronics {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+        
+        .category-badge.documents {
+            background-color: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+        }
+        
+        /* Submenu redesign */
+        .tools-submenu {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto 30px;
+            background-color: var(--bg-off-white);
+            border-radius: 50px;
+            padding: 5px;
+            width: fit-content;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        
+        .submenu-item {
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-medium);
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .submenu-item.active {
+            color: white;
+        }
+        
+        .submenu-item:hover:not(.active) {
+            color: var(--primary);
+        }
+        
+        .tools-submenu::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            height: calc(100% - 10px);
+            width: calc(50% - 5px);
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 50px;
+            transition: transform 0.3s ease;
+            z-index: 0;
+        }
+        
+        .tools-submenu.currency::before {
+            transform: translateX(0);
+        }
+        
+        .tools-submenu.checklist::before {
+            transform: translateX(100%);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .packing-checklist {
+                margin: 0 15px;
+                padding: 25px 20px;
+            }
+            
+            .add-item-form {
+                flex-direction: column;
+            }
+            
+            #item-category {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -45,25 +687,53 @@
     <!-- Main Container -->
     <main class="app-container single-panel">
         <section class="content-section">
+            <div class="tools-submenu checklist">
+                <a href="currency.html" class="submenu-item">Currency Converter</a>
+                <a href="checklist.html" class="submenu-item active">Packing Checklist</a>
+            </div>
+            
             <div class="packing-checklist">
                 <div class="checklist-header">
                     <h2>Packing Checklist</h2>
-                    <div class="current-date">2025-05-17</div>
+                    <div class="current-date">May 17, 2025</div>
                     <div class="progress-container">
                         <div class="progress-bar" style="width: 60%;"></div>
-                        <span class="progress-text">60% packed</span>
+                    </div>
+                    <div class="progress-text">60% packed</div>
+                    
+                    <div class="trip-selector">
+                        <select id="trip-select">
+                            <option value="europe-summer">Europe Summer Trip</option>
+                            <option value="asia-backpacking">Asia Backpacking Adventure</option>
+                            <option value="winter-ski">Winter Ski Vacation</option>
+                            <option value="beach-getaway">Beach Getaway</option>
+                            <option value="custom">Create Custom Checklist</option>
+                        </select>
                     </div>
                 </div>
+                
                 <div class="checklist-categories">
-                    <button class="category-btn active" data-category="essential">Essentials</button>
-                    <button class="category-btn" data-category="clothing">Clothing</button>
-                    <button class="category-btn" data-category="toiletries">Toiletries</button>
-                    <button class="category-btn" data-category="electronics">Electronics</button>
-                    <button class="category-btn" data-category="documents">Documents</button>
+                    <button class="category-btn active" data-category="essential">
+                        <i class="fas fa-star category-icon"></i>Essentials
+                    </button>
+                    <button class="category-btn" data-category="clothing">
+                        <i class="fas fa-tshirt category-icon"></i>Clothing
+                    </button>
+                    <button class="category-btn" data-category="toiletries">
+                        <i class="fas fa-tooth category-icon"></i>Toiletries
+                    </button>
+                    <button class="category-btn" data-category="electronics">
+                        <i class="fas fa-mobile-alt category-icon"></i>Electronics
+                    </button>
+                    <button class="category-btn" data-category="documents">
+                        <i class="fas fa-passport category-icon"></i>Documents
+                    </button>
                 </div>
-                <div class="checklist-items">
-                    <!-- Checklist items will be added here by JS -->
+                
+                <div class="checklist-items" id="checklist-items-container">
+                    <!-- Items will be added dynamically by JS -->
                 </div>
+                
                 <div class="add-item-form">
                     <input type="text" id="new-item-input" placeholder="Add new item...">
                     <select id="item-category">
@@ -73,7 +743,9 @@
                         <option value="electronics">Electronics</option>
                         <option value="documents">Documents</option>
                     </select>
-                    <button id="add-item-btn">Add</button>
+                    <button id="add-item-btn">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
                 </div>
             </div>
         </section>
@@ -160,11 +832,385 @@
             }
         }
         
+        // Enhanced checklist functionality
+        function enhancedChecklist() {
+            const checklistContainer = document.getElementById('checklist-items-container');
+            const addItemButton = document.getElementById('add-item-btn');
+            const newItemInput = document.getElementById('new-item-input');
+            const itemCategorySelect = document.getElementById('item-category');
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const tripSelect = document.getElementById('trip-select');
+            const progressBar = document.querySelector('.progress-bar');
+            const progressText = document.querySelector('.progress-text');
+            
+            // Sample checklist data
+            const checklistItems = {
+                essential: [
+                    { id: 'e1', name: 'Passport', checked: true },
+                    { id: 'e2', name: 'Travel Insurance Documents', checked: true },
+                    { id: 'e3', name: 'Credit/Debit Cards', checked: true },
+                    { id: 'e4', name: 'Local Currency', checked: false },
+                    { id: 'e5', name: 'Medications', checked: false },
+                    { id: 'e6', name: 'Travel Adapters', checked: false }
+                ],
+                clothing: [
+                    { id: 'c1', name: 'T-shirts (5)', checked: true },
+                    { id: 'c2', name: 'Pants/Shorts (3)', checked: true },
+                    { id: 'c3', name: 'Underwear (7)', checked: true },
+                    { id: 'c4', name: 'Socks (7 pairs)', checked: false },
+                    { id: 'c5', name: 'Jacket/Sweater', checked: false },
+                    { id: 'c6', name: 'Swimwear', checked: false },
+                    { id: 'c7', name: 'Sleepwear', checked: false }
+                ],
+                toiletries: [
+                    { id: 't1', name: 'Toothbrush & Toothpaste', checked: true },
+                    { id: 't2', name: 'Shampoo & Conditioner', checked: false },
+                    { id: 't3', name: 'Deodorant', checked: false },
+                    { id: 't4', name: 'Sunscreen', checked: false },
+                    { id: 't5', name: 'Skincare Products', checked: false }
+                ],
+                electronics: [
+                    { id: 'el1', name: 'Smartphone & Charger', checked: true },
+                    { id: 'el2', name: 'Camera & Charger', checked: false },
+                    { id: 'el3', name: 'Laptop & Charger', checked: false },
+                    { id: 'el4', name: 'Power Bank', checked: false },
+                    { id: 'el5', name: 'Headphones', checked: false }
+                ],
+                documents: [
+                    { id: 'd1', name: 'Passport Copies', checked: true },
+                    { id: 'd2', name: 'Visa Documents', checked: true },
+                    { id: 'd3', name: 'Hotel Reservations', checked: false },
+                    { id: 'd4', name: 'Flight Tickets', checked: false },
+                    { id: 'd5', name: 'Travel Insurance Policy', checked: false }
+                ]
+            };
+            
+            // Current category
+            let currentCategory = 'essential';
+            
+            // Function to render checklist items
+            function renderChecklist() {
+                // Get items for the current category
+                const items = checklistItems[currentCategory] || [];
+                
+                // Clear the container
+                checklistContainer.innerHTML = '';
+                
+                // If no items, show empty state
+                if (items.length === 0) {
+                    checklistContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-list-ul empty-state-icon"></i>
+                            <div class="empty-state-text">No items in this category yet</div>
+                            <button class="empty-state-btn">Add Your First Item</button>
+                        </div>
+                    `;
+                    
+                    const emptyStateButton = checklistContainer.querySelector('.empty-state-btn');
+                    if (emptyStateButton) {
+                        emptyStateButton.addEventListener('click', () => {
+                            newItemInput.focus();
+                        });
+                    }
+                    return;
+                }
+                
+                // Otherwise, render items
+                items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'checklist-item';
+                    itemElement.setAttribute('data-id', item.id);
+                    itemElement.innerHTML = `
+                        <label class="item-checkbox">
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} data-id="${item.id}">
+                            <span class="checkmark"></span>
+                        </label>
+                        <div class="item-content">
+                            <div class="item-name">${item.name}
+                                <span class="category-badge ${currentCategory}">${currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1)}</span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn edit-btn">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add to the container with animation
+                    itemElement.style.opacity = '0';
+                    itemElement.style.transform = 'translateY(20px)';
+                    checklistContainer.appendChild(itemElement);
+                    
+                    // Trigger animation
+                    setTimeout(() => {
+                        itemElement.style.transition = 'all 0.3s ease';
+                        itemElement.style.opacity = '1';
+                        itemElement.style.transform = 'translateY(0)';
+                    }, 50 * checklistContainer.children.length); // Stagger the animations
+                });
+                
+                // Add event listeners for item actions
+                addItemEventListeners();
+                updateProgress();
+            }
+            
+            // Update progress bar and text
+            function updateProgress() {
+                // Calculate total and checked items
+                let totalItems = 0;
+                let checkedItems = 0;
+                
+                // Count across all categories
+                Object.values(checklistItems).forEach(items => {
+                    totalItems += items.length;
+                    checkedItems += items.filter(item => item.checked).length;
+                });
+                
+                // Calculate percentage
+                const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+                
+                // Update progress bar with animation
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = `${percentage}%`;
+                }, 100);
+                
+                // Update text
+                progressText.textContent = `${percentage}% packed`;
+            }
+            
+            // Add event listeners for item actions
+            function addItemEventListeners() {
+                // Checkbox change event
+                const checkboxes = checklistContainer.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const category = currentCategory;
+                        
+                        // Find and update the item
+                        const item = checklistItems[category].find(item => item.id === id);
+                        if (item) {
+                            item.checked = e.target.checked;
+                            
+                            // Add checked animation
+                            const itemElement = e.target.closest('.checklist-item');
+                            if (e.target.checked) {
+                                itemElement.classList.add('checked-animation');
+                            } else {
+                                itemElement.classList.remove('checked-animation');
+                            }
+                            
+                            updateProgress();
+                        }
+                    });
+                });
+                
+                // Delete button click event
+                const deleteButtons = checklistContainer.querySelectorAll('.delete-btn');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const itemElement = e.target.closest('.checklist-item');
+                        const id = itemElement.getAttribute('data-id');
+                        
+                        // Add delete animation
+                        itemElement.style.opacity = '0';
+                        itemElement.style.transform = 'translateX(50px)';
+                        
+                        // Remove from array
+                        checklistItems[currentCategory] = checklistItems[currentCategory].filter(item => item.id !== id);
+                        
+                        // Remove from DOM after animation
+                        setTimeout(() => {
+                            itemElement.remove();
+                            
+                            // If no items left, re-render to show empty state
+                            if (checklistItems[currentCategory].length === 0) {
+                                renderChecklist();
+                            }
+                            
+                            updateProgress();
+                        }, 300);
+                    });
+                });
+                
+                // Edit button click event
+                const editButtons = checklistContainer.querySelectorAll('.edit-btn');
+                editButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const itemElement = e.target.closest('.checklist-item');
+                        const id = itemElement.getAttribute('data-id');
+                        const item = checklistItems[currentCategory].find(item => item.id === id);
+                        
+                        if (item) {
+                            // Replace with edit form
+                            const itemContent = itemElement.querySelector('.item-content');
+                            const itemActions = itemElement.querySelector('.item-actions');
+                            
+                            const oldContent = itemContent.innerHTML;
+                            const oldActions = itemActions.innerHTML;
+                            
+                            itemContent.innerHTML = `
+                                <input type="text" class="edit-item-input" value="${item.name}">
+                            `;
+                            
+                            itemActions.innerHTML = `
+                                <button class="action-btn save-btn">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn cancel-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            
+                            // Focus on input
+                            const editInput = itemContent.querySelector('.edit-item-input');
+                            editInput.focus();
+                            editInput.select();
+                            
+                            // Save button click
+                            const saveBtn = itemActions.querySelector('.save-btn');
+                            saveBtn.addEventListener('click', () => {
+                                const newName = editInput.value.trim();
+                                if (newName) {
+                                    item.name = newName;
+                                    renderChecklist();
+                                }
+                            });
+                            
+                            // Cancel button click
+                            const cancelBtn = itemActions.querySelector('.cancel-btn');
+                            cancelBtn.addEventListener('click', () => {
+                                itemContent.innerHTML = oldContent;
+                                itemActions.innerHTML = oldActions;
+                                addItemEventListeners(); // Re-add event listeners
+                            });
+                            
+                            // Handle enter key
+                            editInput.addEventListener('keyup', (e) => {
+                                if (e.key === 'Enter') {
+                                    saveBtn.click();
+                                } else if (e.key === 'Escape') {
+                                    cancelBtn.click();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // Category button click event
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Update current category
+                    currentCategory = button.getAttribute('data-category');
+                    
+                    // Render checklist for the new category
+                    renderChecklist();
+                });
+            });
+            
+            // Add new item
+            addItemButton.addEventListener('click', () => {
+                const name = newItemInput.value.trim();
+                const category = itemCategorySelect.value;
+                
+                if (name) {
+                    // Generate unique ID
+                    const id = 'id-' + Date.now();
+                    
+                    // Create new item
+                    const newItem = {
+                        id,
+                        name,
+                        checked: false
+                    };
+                    
+                    // Ensure the category array exists
+                    if (!checklistItems[category]) {
+                        checklistItems[category] = [];
+                    }
+                    
+                    // Add to the category
+                    checklistItems[category].push(newItem);
+                    
+                    // If we're currently viewing this category, re-render
+                    if (currentCategory === category) {
+                        renderChecklist();
+                    } else {
+                        // Otherwise, switch to that category
+                        currentCategory = category;
+                        categoryButtons.forEach(btn => {
+                            if (btn.getAttribute('data-category') === category) {
+                                btn.classList.add('active');
+                            } else {
+                                btn.classList.remove('active');
+                            }
+                        });
+                        renderChecklist();
+                    }
+                    
+                    // Clear input
+                    newItemInput.value = '';
+                    newItemInput.focus();
+                    
+                    // Show success feedback
+                    addItemButton.classList.add('success');
+                    addItemButton.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    setTimeout(() => {
+                        addItemButton.classList.remove('success');
+                        addItemButton.innerHTML = '<i class="fas fa-plus"></i> Add Item';
+                    }, 1500);
+                }
+            });
+            
+            // Trip select change event
+            tripSelect.addEventListener('change', () => {
+                // In a real app, this would load trip-specific checklist items
+                // For demo, just show a message
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'loading-message';
+                loadingDiv.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <p>Loading ${tripSelect.options[tripSelect.selectedIndex].text} checklist...</p>
+                `;
+                
+                checklistContainer.innerHTML = '';
+                checklistContainer.appendChild(loadingDiv);
+                
+                // Simulate loading
+                setTimeout(() => {
+                    renderChecklist();
+                }, 1000);
+            });
+            
+            // Handle Enter key in new item input
+            newItemInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    addItemButton.click();
+                }
+            });
+            
+            // Initial render
+            renderChecklist();
+        }
+        
         // Initialize everything when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             initChecklist();
             initTheme();
             initMobileMenu();
+            enhancedChecklist();
         });
     </script>
 </body>

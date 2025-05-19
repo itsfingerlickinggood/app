@@ -32,6 +32,75 @@
             --animation-rise-hover: -3px;
         }
         
+        /* Add new notification styles */
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            padding: 0;
+            z-index: 1000;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.3s var(--animation-easing);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification-content {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            min-width: 280px;
+        }
+        
+        .notification.success .notification-content {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .notification.info .notification-content {
+            border-left: 4px solid #2196F3;
+        }
+        
+        .notification.warning .notification-content {
+            border-left: 4px solid #FFC107;
+        }
+        
+        .notification.error .notification-content {
+            border-left: 4px solid #F44336;
+        }
+        
+        .notification i {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .notification.success i {
+            color: #4CAF50;
+        }
+        
+        .notification.info i {
+            color: #2196F3;
+        }
+        
+        .notification.warning i {
+            color: #FFC107;
+        }
+        
+        .notification.error i {
+            color: #F44336;
+        }
+        
+        .notification span {
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+        
         body {
             overflow-x: hidden;
             margin: 0;
@@ -102,6 +171,7 @@
             z-index: 2;
         }
         
+        /* Enhanced map pin styles */
         .map-pin {
             position: absolute;
             width: 12px;
@@ -114,6 +184,32 @@
             animation: pinDrop 0.5s ease forwards;
             pointer-events: auto;
             cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        
+        .map-pin:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .map-pin.active {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 8px rgba(255, 90, 95, 0.3);
+            animation: pulse 1.5s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 90, 95, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 95, 0);
+            }
         }
         
         .pin-tooltip {
@@ -809,6 +905,7 @@
             animation: fadeIn 0.8s ease forwards 900ms;
         }
         
+        /* Enhanced tab animations */
         .tab {
             font-size: 15px;
             font-weight: 600;
@@ -818,10 +915,28 @@
             position: relative;
             cursor: pointer;
             transition: all 0.3s var(--animation-easing);
+            overflow: hidden;
         }
         
-        .tab.active {
-            color: var(--text-dark);
+        .tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: rgba(255, 90, 95, 0.3);
+            border-radius: 3px 3px 0 0;
+            transform: translateX(-50%);
+            transition: width 0.3s var(--animation-easing);
+        }
+        
+        .tab:hover::before {
+            width: 100%;
+        }
+        
+        .tab.active::before {
+            display: none;
         }
         
         .tab.active::after {
@@ -836,15 +951,8 @@
             animation: slideInFromBottom 0.3s var(--animation-easing);
         }
         
-        @keyframes slideInFromBottom {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .tab::after {
+            transform-origin: bottom center;
         }
         
         .tab:hover {
@@ -1160,17 +1268,22 @@
             display: none;
             margin: 20px 0 40px;
             padding: 20px;
-            animation: fadeIn 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
         .tab-content.active {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInTab 0.5s var(--animation-easing);
         }
-
-        @keyframes fadeIn {
+        
+        @keyframes fadeInTab {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(15px);
             }
             to {
                 opacity: 1;
@@ -1202,6 +1315,7 @@
             margin-top: 30px;
         }
 
+        /* Enhanced card animations for saved places */
         .saved-place-card {
             border-radius: 16px;
             overflow: hidden;
@@ -1210,8 +1324,22 @@
             position: relative;
             background-color: white;
             transform: translateY(0);
+            opacity: 0;
+            animation: fadeUpCard 0.6s var(--animation-easing) forwards;
+            animation-delay: var(--card-delay, 0s);
         }
-
+        
+        @keyframes fadeUpCard {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .saved-place-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
@@ -1288,14 +1416,15 @@
             transform: translateX(-50%);
         }
 
+        /* Trip timeline entry animations */
         .trip-entry {
             display: flex;
             margin-bottom: 50px;
             position: relative;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
             animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
-            animation-delay: calc(var(--entry-index, 0) * 0.1s);
+            animation-delay: calc(var(--entry-index, 0) * 0.15s + 0.2s);
         }
 
         .trip-entry:nth-child(odd) {
@@ -1382,6 +1511,7 @@
             margin: 20px auto;
         }
 
+        /* Enhanced review card animations */
         .review-card {
             background-color: white;
             border-radius: 12px;
@@ -1390,6 +1520,16 @@
             margin-bottom: 20px;
             display: flex;
             gap: 20px;
+            transition: all 0.3s var(--animation-easing);
+            opacity: 0;
+            transform: translateY(25px);
+            animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
+            animation-delay: calc(var(--review-index, 0) * 0.12s + 0.1s);
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
         .review-place-image {
@@ -1435,19 +1575,35 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
             margin-top: 30px;
             position: relative;
-            transition: all 0.3s var(--animation-easing);
+            transition: all 0.5s var(--animation-easing);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: mapFadeIn 0.8s var(--animation-easing) forwards;
+            animation-delay: 0.4s;
         }
-
+        
+        @keyframes mapFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
         .travel-map-container:hover {
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
         }
-
+        
         .travel-stats {
             display: flex;
             justify-content: space-between;
             margin: 30px 0;
         }
-
+        
+        /* Animation for travel stat items */
         .travel-stat-item {
             text-align: center;
             padding: 24px;
@@ -1462,12 +1618,12 @@
             animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
             animation-delay: calc(var(--stat-index, 0) * 0.1s + 0.3s);
         }
-
+        
         .travel-stat-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
         }
-
+        
         .travel-stat-number {
             font-size: 32px;
             font-weight: 800;
@@ -1476,13 +1632,95 @@
             opacity: 0;
             animation: countUp 2s ease-out 1.2s forwards;
         }
-
+        
         .travel-stat-label {
             font-size: 15px;
             font-weight: 500;
             color: var(--text-medium);
         }
+        
+        /* Tab initialization for proper transition */
+        .tab[data-tab] {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab[data-tab]::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            transform: translateY(100%);
+            transition: transform 0.3s var(--animation-easing);
+        }
+        
+        .tab[data-tab].active::after {
+            transform: translateY(0);
+        }
+        
+        /* Enhanced profile photo effects */
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .profile-photo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(255,90,95,0.3), transparent 70%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .profile-photo:hover::before {
+            opacity: 1;
+        }
+        
+        /* Photo item hover effects */
+        .photo-item {
+            aspect-ratio: var(--aspect-ratio, 1/1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s var(--animation-easing);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
+            animation-delay: calc(var(--grid-index, 0) * 0.05s + 0.2s);
+        }
 
+        /* Adjust tab content transition for smooth tab switching */
+        .tab-content {
+            display: none;
+            margin: 20px 0 40px;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInTab 0.5s var(--animation-easing);
+        }
+        
         /* Mobile responsive styles */
         @media (max-width: 992px) {
             .profile-stats {
@@ -1628,6 +1866,153 @@
                 flex-basis: 100%;
                 margin: 0 0 16px;
             }
+        }
+
+        /* Mapbox custom styles */
+        .custom-popup {
+            max-width: 300px;
+            font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .mapboxgl-popup-content {
+            padding: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: popup-appear 0.3s ease forwards;
+        }
+        
+        @keyframes popup-appear {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .popup-content {
+            position: relative;
+        }
+        
+        .popup-content h3 {
+            margin: 0;
+            padding: 16px 16px 5px;
+            font-size: 18px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        
+        .popup-content p {
+            margin: 0;
+            padding: 0 16px 10px;
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+        
+        .popup-image {
+            width: 100%;
+            height: 140px;
+            overflow: hidden;
+        }
+        
+        .popup-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .popup-content:hover .popup-image img {
+            transform: scale(1.05);
+        }
+        
+        .popup-button {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 90, 95, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .popup-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 90, 95, 0.4);
+        }
+        
+        /* Map tour button */
+        .map-tour-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            color: var(--text-dark);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .map-tour-button i {
+            font-size: 14px;
+            color: var(--primary);
+        }
+        
+        .map-tour-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .map-tour-button:disabled {
+            opacity: 0.7;
+            transform: translateY(0);
+            cursor: not-allowed;
+        }
+        
+        /* Map overlay for 3D effect */
+        .mapboxgl-canvas-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+            z-index: 1;
+        }
+        
+        /* Mapbox marker animations */
+        @keyframes marker-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 90, 95, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 95, 0);
+            }
+        }
+        
+        .mapbox-marker {
+            animation: marker-pulse 2s infinite;
         }
     </style>
 </head>
@@ -1836,118 +2221,120 @@
             
             <!-- Navigation tabs -->
             <div class="profile-tabs">
-                <div class="tab active">
+                <div class="tab active" data-tab="photos">
                     Photos
                     <div class="tab-tooltip">View travel photos</div>
                 </div>
-                <div class="tab">
+                <div class="tab" data-tab="saved-places">
                     Saved Places
                     <div class="tab-tooltip">Bookmarked destinations</div>
                 </div>
-                <div class="tab">
+                <div class="tab" data-tab="trips">
                     Trips
                     <div class="tab-tooltip">Past and upcoming journeys</div>
                 </div>
-                <div class="tab">
+                <div class="tab" data-tab="reviews">
                     Reviews
                     <div class="tab-tooltip">Emma's travel recommendations</div>
                 </div>
-                <div class="tab">
+                <div class="tab" data-tab="map">
                     Map
                     <div class="tab-tooltip">Explore visited destinations</div>
                 </div>
             </div>
             
-            <!-- Photo grid -->
-            <div class="photos-grid">
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80" alt="Santorini, Greece">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Santorini, Greece
+            <!-- Photos tab content (default active) -->
+            <div id="photos-content" class="tab-content active">
+                <div class="photos-grid">
+                    <div class="photo-item" style="--grid-index: 0">
+                        <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80" alt="Santorini, Greece">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Santorini, Greece
+                            </div>
+                            <div class="photo-date">June 2023</div>
                         </div>
-                        <div class="photo-date">June 2023</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris, France">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Paris, France
+                    <div class="photo-item" style="--grid-index: 1">
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris, France">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Paris, France
+                            </div>
+                            <div class="photo-date">April 2023</div>
                         </div>
-                        <div class="photo-date">April 2023</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?auto=format&fit=crop&w=800&q=80" alt="Amalfi Coast, Italy">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Amalfi Coast, Italy
+                    <div class="photo-item" style="--grid-index: 2">
+                        <img src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?auto=format&fit=crop&w=800&q=80" alt="Amalfi Coast, Italy">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Amalfi Coast, Italy
+                            </div>
+                            <div class="photo-date">September 2022</div>
                         </div>
-                        <div class="photo-date">September 2022</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80" alt="Mountain landscape">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Swiss Alps
+                    <div class="photo-item" style="--grid-index: 3">
+                        <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80" alt="Mountain landscape">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Swiss Alps
+                            </div>
+                            <div class="photo-date">January 2023</div>
                         </div>
-                        <div class="photo-date">January 2023</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=800&q=80" alt="New York City, USA">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> New York City, USA
+                    <div class="photo-item" style="--grid-index: 4">
+                        <img src="https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=800&q=80" alt="New York City, USA">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> New York City, USA
+                            </div>
+                            <div class="photo-date">December 2022</div>
                         </div>
-                        <div class="photo-date">December 2022</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=800&q=80" alt="Tropical beach">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Maldives
+                    <div class="photo-item" style="--grid-index: 5">
+                        <img src="https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=800&q=80" alt="Tropical beach">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Maldives
+                            </div>
+                            <div class="photo-date">July 2022</div>
                         </div>
-                        <div class="photo-date">July 2022</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1526718583451-e88ebf774771?auto=format&fit=crop&w=800&q=80" alt="Kyoto, Japan">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Kyoto, Japan
+                    <div class="photo-item" style="--grid-index: 6">
+                        <img src="https://images.unsplash.com/photo-1526718583451-e88ebf774771?auto=format&fit=crop&w=800&q=80" alt="Kyoto, Japan">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Kyoto, Japan
+                            </div>
+                            <div class="photo-date">November 2021</div>
                         </div>
-                        <div class="photo-date">November 2021</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Zermatt, Switzerland
+                    <div class="photo-item" style="--grid-index: 7">
+                        <img src="https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Zermatt, Switzerland
+                            </div>
+                            <div class="photo-date">March 2022</div>
                         </div>
-                        <div class="photo-date">March 2022</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80" alt="Barcelona, Spain">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Barcelona, Spain
+                    <div class="photo-item" style="--grid-index: 8">
+                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80" alt="Barcelona, Spain">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Barcelona, Spain
+                            </div>
+                            <div class="photo-date">May 2022</div>
                         </div>
-                        <div class="photo-date">May 2022</div>
                     </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=800&q=80" alt="Bali, Indonesia">
-                    <div class="photo-meta">
-                        <div class="photo-location">
-                            <i class="fas fa-map-marker-alt"></i> Bali, Indonesia
+                    <div class="photo-item" style="--grid-index: 9">
+                        <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=800&q=80" alt="Bali, Indonesia">
+                        <div class="photo-meta">
+                            <div class="photo-location">
+                                <i class="fas fa-map-marker-alt"></i> Bali, Indonesia
+                            </div>
+                            <div class="photo-date">August 2022</div>
                         </div>
-                        <div class="photo-date">August 2022</div>
                     </div>
                 </div>
             </div>
@@ -1958,7 +2345,7 @@
                 <p class="section-description">Places Emma has bookmarked for future adventures</p>
                 
                 <div class="saved-places-grid">
-                    <div class="saved-place-card">
+                    <div class="saved-place-card" style="--card-delay: 0.1s">
                         <img src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80" alt="Cappadocia" class="saved-place-image">
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Cappadocia</h3>
@@ -1972,7 +2359,7 @@
                         </div>
                     </div>
                     
-                    <div class="saved-place-card">
+                    <div class="saved-place-card" style="--card-delay: 0.2s">
                         <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80" alt="Machu Picchu" class="saved-place-image">
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Machu Picchu</h3>
@@ -1986,7 +2373,7 @@
                         </div>
                     </div>
                     
-                    <div class="saved-place-card">
+                    <div class="saved-place-card" style="--card-delay: 0.3s">
                         <img src="https://images.unsplash.com/photo-1565717845034-c3e1acd0bd7b?auto=format&fit=crop&w=800&q=80" alt="Maldives" class="saved-place-image">
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Maldives</h3>
@@ -2000,7 +2387,7 @@
                         </div>
                     </div>
                     
-                    <div class="saved-place-card">
+                    <div class="saved-place-card" style="--card-delay: 0.4s">
                         <img src="https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=800&q=80" alt="Petra" class="saved-place-image">
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Petra</h3>
@@ -2014,7 +2401,7 @@
                         </div>
                     </div>
                     
-                    <div class="saved-place-card">
+                    <div class="saved-place-card" style="--card-delay: 0.5s">
                         <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=800&q=80" alt="Bora Bora" class="saved-place-image">
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Bora Bora</h3>
@@ -2028,7 +2415,7 @@
                         </div>
                     </div>
                     
-                    <div class="saved-place-card">
+                    <div class="saved-place-card" style="--card-delay: 0.6s">
                         <img src="https://images.unsplash.com/photo-1492136344046-866c85e0bf04?auto=format&fit=crop&w=800&q=80" alt="Provence" class="saved-place-image">
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Provence</h3>
@@ -2052,7 +2439,7 @@
                 <div class="trips-timeline">
                     <div class="timeline-line"></div>
                     
-                    <div class="trip-entry">
+                    <div class="trip-entry" style="--entry-index: 0">
                         <div class="trip-date">June 2023</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
@@ -2067,7 +2454,7 @@
                         </div>
                     </div>
                     
-                    <div class="trip-entry">
+                    <div class="trip-entry" style="--entry-index: 1">
                         <div class="trip-date">April 2023</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
@@ -2082,7 +2469,7 @@
                         </div>
                     </div>
                     
-                    <div class="trip-entry">
+                    <div class="trip-entry" style="--entry-index: 2">
                         <div class="trip-date">January 2023</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
@@ -2096,6 +2483,21 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="trip-entry" style="--entry-index: 3">
+                        <div class="trip-date">October 2022</div>
+                        <div class="trip-dot"></div>
+                        <div class="trip-content">
+                            <div class="trip-card">
+                                <img src="https://images.unsplash.com/photo-1544085311-11a028465b03?auto=format&fit=crop&w=800&q=80" alt="Japan">
+                                <div class="trip-card-info">
+                                    <h3 class="trip-card-title">Japan Adventure</h3>
+                                    <div class="trip-card-dates">October 2 - October 18, 2022</div>
+                                    <p class="trip-card-description">Autumn journey through Tokyo, Kyoto, and Osaka. Experienced traditional culture, modern technology, and incredible cuisine.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -2105,7 +2507,7 @@
                 <p class="section-description">Emma's honest opinions about places she's visited</p>
                 
                 <div class="reviews-container">
-                    <div class="review-card">
+                    <div class="review-card" style="--review-index: 0">
                         <img src="https://images.unsplash.com/photo-1565865735424-fe8edb638b7b?auto=format&fit=crop&w=800&q=80" alt="Ritz Paris" class="review-place-image">
                         <div class="review-content">
                             <h3 class="review-place-name">Ritz Paris Hotel</h3>
@@ -2121,7 +2523,7 @@
                         </div>
                     </div>
                     
-                    <div class="review-card">
+                    <div class="review-card" style="--review-index: 1">
                         <img src="https://images.unsplash.com/photo-1565658144659-19f17574dc51?auto=format&fit=crop&w=800&q=80" alt="Santorini Restaurant" class="review-place-image">
                         <div class="review-content">
                             <h3 class="review-place-name">Argo Restaurant, Santorini</h3>
@@ -2137,7 +2539,7 @@
                         </div>
                     </div>
                     
-                    <div class="review-card">
+                    <div class="review-card" style="--review-index: 2">
                         <img src="https://images.unsplash.com/photo-1677874842542-d47384832c20?auto=format&fit=crop&w=800&q=80" alt="Swiss Ski Resort" class="review-place-image">
                         <div class="review-content">
                             <h3 class="review-place-name">Zermatt Ski Resort</h3>
@@ -2152,6 +2554,22 @@
                             <div class="review-date">Reviewed in January 2023</div>
                         </div>
                     </div>
+                    
+                    <div class="review-card" style="--review-index: 3">
+                        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80" alt="Tokyo Hotel" class="review-place-image">
+                        <div class="review-content">
+                            <h3 class="review-place-name">Park Hyatt Tokyo</h3>
+                            <div class="review-rating">
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                            </div>
+                            <p class="review-text">An iconic hotel with exceptional service and breathtaking views of Tokyo skyline. The New York Bar on the 52nd floor is a must-visit, especially in the evening when the jazz band plays.</p>
+                            <div class="review-date">Reviewed in October 2022</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -2161,15 +2579,15 @@
                 <p class="section-description">Explore Emma's adventures around the globe</p>
                 
                 <div class="travel-stats">
-                    <div class="travel-stat-item">
+                    <div class="travel-stat-item" style="--stat-index: 0">
                         <div class="travel-stat-number">27</div>
                         <div class="travel-stat-label">Countries Visited</div>
                     </div>
-                    <div class="travel-stat-item">
+                    <div class="travel-stat-item" style="--stat-index: 1">
                         <div class="travel-stat-number">87</div>
                         <div class="travel-stat-label">Cities Explored</div>
                     </div>
-                    <div class="travel-stat-item">
+                    <div class="travel-stat-item" style="--stat-index: 2">
                         <div class="travel-stat-number">4</div>
                         <div class="travel-stat-label">Continents</div>
                     </div>
@@ -2240,19 +2658,38 @@
         // Initialize tab switching
         function initTabs() {
             const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, index) => {
                 tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
                     tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to current tab and matching content
                     tab.classList.add('active');
                     
-                    // Handle tab navigation
-                    if (tab.textContent.includes('Saved Places')) {
-                        window.location.href = 'saved.html';
-                    } else if (tab.textContent.includes('Trips')) {
-                        window.location.href = 'trips.html';
+                    // Find the corresponding content and show it
+                    const contentId = tab.textContent.trim().toLowerCase().replace(/\s+/g, '-') + '-content';
+                    const content = document.getElementById(contentId);
+                    if (content) {
+                        content.classList.add('active');
+                        
+                        // Special case for Map tab which needs to initialize Mapbox
+                        if (tab.textContent.trim().includes('Map')) {
+                            setTimeout(() => {
+                                initMapbox();
+                            }, 100);
+                        }
                     }
                 });
             });
+            
+            // Set the first tab as active by default
+            if (tabs.length > 0 && tabContents.length > 0) {
+                tabs[0].classList.add('active');
+                tabContents[0].classList.add('active');
+            }
         }
         
         // Initialize mobile menu
@@ -2345,8 +2782,31 @@
                         
                         if (coverType === 'map') {
                             coverMap.style.backgroundImage = "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80')";
+                            coverMap.classList.remove('photos-view');
+                            coverMap.classList.add('map-view');
+                            
+                            // Show map pins
+                            const mapPins = document.getElementById('map-pins');
+                            if (mapPins) {
+                                mapPins.style.display = 'block';
+                                
+                                // Animate pins dropping in sequence
+                                const pins = mapPins.querySelectorAll('.map-pin');
+                                pins.forEach((pin, index) => {
+                                    pin.style.animationDelay = `${100 + (index * 100)}ms`;
+                                    pin.style.animationName = 'pinDrop';
+                                });
+                            }
                         } else if (coverType === 'photos') {
                             coverMap.style.backgroundImage = "url('https://images.unsplash.com/photo-1526718583451-e88ebf774771?auto=format&fit=crop&w=1200&q=80')";
+                            coverMap.classList.remove('map-view');
+                            coverMap.classList.add('photos-view');
+                            
+                            // Hide map pins
+                            const mapPins = document.getElementById('map-pins');
+                            if (mapPins) {
+                                mapPins.style.display = 'none';
+                            }
                         }
                     });
                 });
@@ -2467,6 +2927,9 @@
             const mapContainer = document.getElementById('map-pins');
             if (!mapContainer) return;
             
+            // Clear existing pins
+            mapContainer.innerHTML = '';
+            
             pinData.forEach(pin => {
                 const pinElement = document.createElement('div');
                 pinElement.className = 'map-pin';
@@ -2487,7 +2950,12 @@
                 
                 // Add click handler
                 pinElement.addEventListener('click', () => {
-                    alert(`Showing details for ${pin.name}`);
+                    // Highlight this location and show details
+                    pinElement.classList.add('active');
+                    setTimeout(() => { pinElement.classList.remove('active'); }, 1500);
+                    
+                    // Show a notification
+                    showNotification(`${pin.name} - You visited here in 2023`, 'info');
                 });
                 
                 mapContainer.appendChild(pinElement);
@@ -2566,10 +3034,23 @@
             const mapContainer = document.getElementById('travel-map');
             if (!mapContainer || typeof mapboxgl === 'undefined') return;
             
+            // Use a mock implementation if Mapbox isn't available
+            if (typeof mapboxgl === 'undefined') {
+                mapContainer.innerHTML = `
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-map-marked-alt" style="font-size: 48px; color: #FF5A5F;"></i>
+                            <p style="margin-top: 10px;">Interactive map would appear here</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
             // Check if map is already initialized
             if (mapContainer._map) return;
             
-            mapboxgl.accessToken = 'pk.eyJ1Ijoic2FtcGxldXNlciIsImEiOiJja3M1enVlZHkwaDkxMm9vNzZyZmRlbXpzIn0.ZZayzS3JYIV-QP1moifMwg';
+            mapboxgl.accessToken = 'pk.eyJ1IjoieC0wMDciLCJhIjoiY21hc2M2YzlyMGswejJrc2ZkcmxrczdhcCJ9.WDicPdPwfpF6W0NwUXRL8w';
             
             const map = new mapboxgl.Map({
                 container: 'travel-map',
@@ -2580,33 +3061,177 @@
             
             // Add markers for visited places
             const places = [
-                { lng: 2.3522, lat: 48.8566, name: 'Paris' },
-                { lng: 12.4964, lat: 41.9028, name: 'Rome' },
-                { lng: 139.6503, lat: 35.6762, name: 'Tokyo' },
-                { lng: -74.0060, lat: 40.7128, name: 'New York' },
-                { lng: 25.4615, lat: 36.3932, name: 'Santorini' }
+                { lng: 2.3522, lat: 48.8566, name: 'Paris', date: 'April 2023' },
+                { lng: 12.4964, lat: 41.9028, name: 'Rome', date: 'September 2022' },
+                { lng: 139.6503, lat: 35.6762, name: 'Tokyo', date: 'November 2021' },
+                { lng: -74.0060, lat: 40.7128, name: 'New York', date: 'December 2022' },
+                { lng: 25.4615, lat: 36.3932, name: 'Santorini', date: 'June 2023' },
+                { lng: 103.8198, lat: 1.3521, name: 'Singapore', date: 'February 2022' },
+                { lng: 151.2093, lat: -33.8688, name: 'Sydney', date: 'March 2023' },
+                { lng: 55.2708, lat: 25.2048, name: 'Dubai', date: 'January 2022' }
             ];
             
             map.on('load', () => {
-                places.forEach(place => {
-                    const marker = document.createElement('div');
-                    marker.className = 'mapbox-marker';
-                    marker.style.width = '15px';
-                    marker.style.height = '15px';
-                    marker.style.borderRadius = '50%';
-                    marker.style.backgroundColor = '#FF5A5F';
-                    marker.style.border = '2px solid white';
-                    marker.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
-                    
-                    new mapboxgl.Marker(marker)
-                        .setLngLat([place.lng, place.lat])
-                        .setPopup(new mapboxgl.Popup({ offset: 25 })
-                            .setHTML(`<h3>${place.name}</h3>`))
-                        .addTo(map);
+                // Add a custom layer for flight paths
+                map.addSource('routes', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'FeatureCollection',
+                        'features': createRouteLines(places)
+                    }
                 });
+                
+                map.addLayer({
+                    'id': 'routes',
+                    'type': 'line',
+                    'source': 'routes',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#FF5A5F',
+                        'line-width': 2,
+                        'line-opacity': 0.7,
+                        'line-dasharray': [0, 2, 1]
+                    }
+                });
+                
+                // Add animated markers with custom DOM elements
+                places.forEach((place, index) => {
+                    // Create marker element
+                    const markerEl = document.createElement('div');
+                    markerEl.className = 'mapbox-marker';
+                    markerEl.style.width = '22px';
+                    markerEl.style.height = '22px';
+                    markerEl.style.borderRadius = '50%';
+                    markerEl.style.backgroundColor = '#FF5A5F';
+                    markerEl.style.border = '3px solid white';
+                    markerEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+                    markerEl.style.cursor = 'pointer';
+                    markerEl.style.transition = 'all 0.3s ease';
+                    markerEl.style.opacity = '0';
+                    markerEl.style.transform = 'scale(0)';
+                    
+                    // Create animated popup with place details
+                    const popup = new mapboxgl.Popup({
+                        offset: 25,
+                        closeButton: false,
+                        closeOnClick: true,
+                        className: 'custom-popup'
+                    }).setHTML(`
+                        <div class="popup-content">
+                            <h3>${place.name}</h3>
+                            <p>Visited: ${place.date}</p>
+                            <div class="popup-image">
+                                <img src="https://source.unsplash.com/300x200/?${place.name.toLowerCase()}" alt="${place.name}">
+                            </div>
+                            <button class="popup-button">See Stories</button>
+                        </div>
+                    `);
+                    
+                    // Create and add the marker to the map
+                    const marker = new mapboxgl.Marker(markerEl)
+                        .setLngLat([place.lng, place.lat])
+                        .setPopup(popup)
+                        .addTo(map);
+                    
+                    // Animate marker appearance with delay
+                    setTimeout(() => {
+                        markerEl.style.opacity = '1';
+                        markerEl.style.transform = 'scale(1)';
+                    }, 200 + (index * 150));
+                    
+                    // Add hover effect
+                    markerEl.addEventListener('mouseenter', () => {
+                        markerEl.style.transform = 'scale(1.4)';
+                        markerEl.style.boxShadow = '0 3px 12px rgba(255,90,95,0.5)';
+                    });
+                    
+                    markerEl.addEventListener('mouseleave', () => {
+                        markerEl.style.transform = 'scale(1)';
+                        markerEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+                    });
+                });
+                
+                // Fly to each destination as a demo
+                let currentIndex = 0;
+                function flyToNextDestination() {
+                    if (currentIndex >= places.length) {
+                        map.flyTo({
+                            center: [0, 30],
+                            zoom: 1.5,
+                            duration: 3000,
+                            essential: true
+                        });
+                        return;
+                    }
+                    
+                    const place = places[currentIndex];
+                    map.flyTo({
+                        center: [place.lng, place.lat],
+                        zoom: 5,
+                        duration: 2000,
+                        essential: true
+                    });
+                    
+                    currentIndex++;
+                    setTimeout(flyToNextDestination, 3000);
+                }
+                
+                // Start the tour after 2 seconds
+                const startTourBtn = document.createElement('button');
+                startTourBtn.className = 'map-tour-button';
+                startTourBtn.innerHTML = '<i class="fas fa-play"></i> Tour Destinations';
+                startTourBtn.addEventListener('click', () => {
+                    flyToNextDestination();
+                    startTourBtn.disabled = true;
+                    startTourBtn.innerHTML = '<i class="fas fa-plane"></i> Tour in Progress...';
+                });
+                
+                document.getElementById('map-content').appendChild(startTourBtn);
             });
             
             mapContainer._map = map;
+        }
+        
+        // Create flight paths between destinations
+        function createRouteLines(places) {
+            const features = [];
+            
+            // Create routes between consecutive destinations
+            for (let i = 0; i < places.length - 1; i++) {
+                const start = places[i];
+                const end = places[i + 1];
+                
+                features.push({
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [
+                            [start.lng, start.lat],
+                            [end.lng, end.lat]
+                        ]
+                    }
+                });
+            }
+            
+            // Connect last destination back to first to complete the circle
+            const start = places[places.length - 1];
+            const end = places[0];
+            
+            features.push({
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [
+                        [start.lng, start.lat],
+                        [end.lng, end.lat]
+                    ]
+                }
+            });
+            
+            return features;
         }
         
         // Enhanced profile photo interaction
@@ -2630,6 +3255,33 @@
                     alert('Edit profile photo');
                 });
             }
+        }
+        
+        // Show a notification message
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
         }
     </script>
 </body>
