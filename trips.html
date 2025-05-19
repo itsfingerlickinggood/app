@@ -24,12 +24,6 @@
             </ul>
         </nav>
         <div class="user-section">
-            <button class="theme-toggle">
-                <input type="checkbox" class="theme-switch" id="theme-switch">
-                <label for="theme-switch" class="switch-label"></label>
-                <i class="fas fa-moon toggle-icon"></i>
-                <i class="fas fa-sun toggle-icon-sun"></i>
-            </button>
             <div class="user-profile">
                 <a href="profile.html">
                     <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
@@ -42,33 +36,31 @@
         </div>
     </header>
 
+    <!-- Hero Section -->
+    <section class="trips-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Your Trips, Beautifully Organized</h1>
+            <p class="hero-subtitle">See your upcoming adventures and relive your favorite memories.</p>
+        </div>
+        <div class="hero-illustration">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Trips Illustration" loading="lazy"/>
+        </div>
+    </section>
+
     <!-- Main Container -->
-    <main class="app-container single-panel">
-        <section class="content-section">
-            <h2 class="section-title">My Trips</h2>
-            
-            <!-- Trip Planner -->
-            <div class="trip-planner">
+    <main class="trips-main">
+        <section class="planner-section">
+            <div class="planner-card">
                 <div class="countdown-timer">
-                    <h3>Trip Countdown</h3>
+                    <h3><i class="fas fa-clock planner-icon"></i> Trip Countdown</h3>
                     <div class="countdown">
-                        <div class="countdown-item">
-                            <span class="count">14</span>
-                            <span class="unit">days</span>
-                        </div>
-                        <div class="countdown-item">
-                            <span class="count">8</span>
-                            <span class="unit">hours</span>
-                        </div>
-                        <div class="countdown-item">
-                            <span class="count">35</span>
-                            <span class="unit">minutes</span>
-                        </div>
+                        <div class="countdown-item"><span class="count">14</span><span class="unit">days</span></div>
+                        <div class="countdown-item"><span class="count">8</span><span class="unit">hours</span></div>
+                        <div class="countdown-item"><span class="count">35</span><span class="unit">minutes</span></div>
                     </div>
                 </div>
-                
                 <div class="daily-planner">
-                    <h3>Daily Plan</h3>
+                    <h3><i class="fas fa-calendar-alt planner-icon"></i> Daily Plan</h3>
                     <div class="day-selector">
                         <button class="day-btn">Day 1</button>
                         <button class="day-btn active">Day 2</button>
@@ -77,7 +69,6 @@
                         <button class="day-btn">+ Add</button>
                     </div>
                     <div class="timeline">
-                        <!-- Timeline events will be added by JS -->
                         <div class="timeline-event">
                             <div class="timeline-time">09:00</div>
                             <div class="timeline-content">
@@ -103,92 +94,81 @@
                             </div>
                         </div>
                     </div>
-                    <button class="add-event-btn">
-                        <i class="fas fa-plus"></i> Add Event
-                    </button>
+                    <button class="add-event-btn expressive"><i class="fas fa-plus"></i> Add Event</button>
                 </div>
             </div>
-            
-            <!-- Trip Cards -->
-            <div class="trips-section">
-                <div class="section-header">
-                    <h3>Upcoming & Past Trips</h3>
-                    <button class="add-trip-btn">
-                        <i class="fas fa-plus"></i> New Trip
-                    </button>
+        </section>
+        <section class="trips-section">
+            <div class="section-header">
+                <h3>Upcoming & Past Trips</h3>
+                <button class="add-trip-btn expressive"><span class="add-trip-icon"><i class="fas fa-plus"></i></span> New Trip</button>
+            </div>
+            <div class="trip-cards-grid">
+                <div class="trip-card upcoming">
+                    <div class="trip-badge pill-badge upcoming"><i class="fas fa-plane-departure"></i> Upcoming</div>
+                    <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop" alt="Tokyo Trip">
+                    <div class="trip-info">
+                        <h4>Tokyo Adventure</h4>
+                        <div class="trip-dates">June 1 - 14, 2025</div>
+                        <div class="trip-progress">
+                            <div class="progress-bar" style="width: 75%"></div>
+                            <div class="progress-text">75% Planned</div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="trip-cards">
-                    <div class="trip-card upcoming">
-                        <div class="trip-badge">Upcoming</div>
-                        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop" alt="Tokyo Trip">
-                        <div class="trip-info">
-                            <h4>Tokyo Adventure</h4>
-                            <div class="trip-dates">June 1 - 14, 2025</div>
-                            <div class="trip-progress">
-                                <div class="progress-bar" style="width: 75%"></div>
-                                <div class="progress-text">75% Planned</div>
-                            </div>
-                        </div>
+                <div class="trip-card completed">
+                    <div class="trip-badge pill-badge completed"><i class="fas fa-check-circle"></i> Completed</div>
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop" alt="Paris Trip">
+                    <div class="trip-info">
+                        <h4>Paris Getaway</h4>
+                        <div class="trip-dates">Mar 10 - 17, 2024</div>
+                        <button class="view-memories expressive"><i class="fas fa-images"></i> View Memories</button>
                     </div>
-                    
-                    <div class="trip-card past">
-                        <div class="trip-badge">Past</div>
-                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop" alt="Paris Trip">
-                        <div class="trip-info">
-                            <h4>Paris Getaway</h4>
-                            <div class="trip-dates">Mar 10 - 17, 2024</div>
-                            <button class="view-memories">View Memories</button>
-                        </div>
-                    </div>
-                    
-                    <div class="trip-card past">
-                        <div class="trip-badge">Past</div>
-                        <img src="https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=600&h=400&fit=crop" alt="Barcelona Trip">
-                        <div class="trip-info">
-                            <h4>Barcelona Weekend</h4>
-                            <div class="trip-dates">Nov 5 - 8, 2023</div>
-                            <button class="view-memories">View Memories</button>
-                        </div>
+                </div>
+                <div class="trip-card completed">
+                    <div class="trip-badge pill-badge completed"><i class="fas fa-check-circle"></i> Completed</div>
+                    <img src="https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=600&h=400&fit=crop" alt="Barcelona Trip">
+                    <div class="trip-info">
+                        <h4>Barcelona Weekend</h4>
+                        <div class="trip-dates">Nov 5 - 8, 2023</div>
+                        <button class="view-memories expressive"><i class="fas fa-images"></i> View Memories</button>
                     </div>
                 </div>
             </div>
-            
-            <!-- Create New Trip Section (Initially Hidden) -->
-            <div class="create-trip-section" style="display: none;">
-                <h3>Create New Trip</h3>
-                <form id="new-trip-form">
+        </section>
+        <section class="create-trip-section frosted" style="display: none;">
+            <h3>Create New Trip</h3>
+            <form id="new-trip-form">
+                <div class="form-field">
+                    <label for="trip-name">Trip Name</label>
+                    <input type="text" id="trip-name" required>
+                </div>
+                <div class="form-row">
                     <div class="form-field">
-                        <label for="trip-name">Trip Name</label>
-                        <input type="text" id="trip-name" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label for="departure-date">Departure Date</label>
-                            <input type="date" id="departure-date" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="return-date">Return Date</label>
-                            <input type="date" id="return-date" required>
-                        </div>
+                        <label for="departure-date">Departure Date</label>
+                        <input type="date" id="departure-date" required>
                     </div>
                     <div class="form-field">
-                        <label for="trip-destination">Destination</label>
-                        <select id="trip-destination" required>
-                            <option value="">Select a destination...</option>
-                            <option value="dest-001">Paris, France</option>
-                            <option value="dest-002">Bali, Indonesia</option>
-                            <option value="dest-003">Tokyo, Japan</option>
-                            <option value="dest-004">Santorini, Greece</option>
-                            <option value="dest-005">New York City, USA</option>
-                        </select>
+                        <label for="return-date">Return Date</label>
+                        <input type="date" id="return-date" required>
                     </div>
-                    <div class="form-actions">
-                        <button type="button" id="cancel-trip">Cancel</button>
-                        <button type="submit" id="save-trip">Create Trip</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="form-field">
+                    <label for="trip-destination">Destination</label>
+                    <select id="trip-destination" required>
+                        <option value="">Select a destination...</option>
+                        <option value="dest-001">Paris, France</option>
+                        <option value="dest-002">Bali, Indonesia</option>
+                        <option value="dest-003">Tokyo, Japan</option>
+                        <option value="dest-004">Santorini, Greece</option>
+                        <option value="dest-005">New York City, USA</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancel-trip">Cancel</button>
+                    <button type="submit" id="save-trip">Create Trip</button>
+                </div>
+            </form>
         </section>
     </main>
 
@@ -313,111 +293,155 @@
     </script>
 
     <style>
-        /* Trip specific styles */
-        .trips-section {
-            margin-top: 30px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .add-trip-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-        
-        .trip-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        
-        .trip-card {
-            border-radius: 12px;
+        html, body {
+            font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+            background: #fafbfc;
+            height: 100%;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
-        .trip-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        body {
+            min-height: 100vh;
+            overflow: hidden;
         }
-        
-        .trip-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
+        .app-header {
+            border-bottom: none;
+            box-shadow: none;
         }
-        
-        .trip-info {
-            padding: 15px;
+        .trips-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #fff 60%, #f7f7fa 100%);
+            border-radius: 24px;
+            margin: 24px auto 0 auto;
+            max-width: 1100px;
+            padding: 32px 24px 24px 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .trip-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            z-index: 1;
+        .hero-content {
+            flex: 1 1 60%;
         }
-        
-        .upcoming .trip-badge {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .past .trip-badge {
-            background-color: var(--gray-200);
-            color: var(--gray-500);
-        }
-        
-        .trip-dates {
-            font-size: 14px;
-            color: var(--gray-500);
-            margin-bottom: 10px;
-        }
-        
-        .trip-progress {
-            margin-top: 10px;
-        }
-        
-        .view-memories {
-            margin-top: 10px;
-            padding: 6px 12px;
-            background-color: var(--white);
-            border: 1px solid var(--primary);
+        .hero-title {
+            font-size: 1.5rem;
+            font-weight: 700;
             color: var(--primary);
-            border-radius: 4px;
-            font-size: 14px;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 0;
+        }
+        .hero-illustration {
+            flex: 1 1 40%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .hero-illustration img {
+            max-width: 180px;
+            width: 100%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .trips-main {
+            max-width: 1100px;
+            margin: 16px auto 0 auto;
+            padding: 0 12px 12px 12px;
+            height: calc(100vh - 120px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .planner-section {
+            margin-bottom: 0;
+        }
+        .planner-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 18px 12px 12px 12px;
+            align-items: flex-start;
+        }
+        .planner-icon {
+            color: var(--primary);
+            margin-right: 8px;
+            font-size: 1em;
+            vertical-align: middle;
+        }
+        .countdown-timer {
+            flex: 1 1 120px;
+            min-width: 120px;
+            margin-right: 12px;
+        }
+        .countdown {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .countdown-item {
+            background: linear-gradient(135deg, #ffb400 0%, #ff5a5f 100%);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(255,90,95,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .countdown-item .unit {
+            font-size: 0.8rem;
+            font-weight: 400;
+            margin-top: 2px;
+            color: #fff;
+            opacity: 0.85;
+        }
+        .daily-planner {
+            flex: 2 1 200px;
+            min-width: 180px;
+        }
+        .day-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .day-btn {
+            background: #f7f7fa;
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-weight: 600;
+            border: none;
+            font-size: 0.95rem;
+            transition: background 0.18s, color 0.18s, transform 0.18s, box-shadow 0.18s;
             cursor: pointer;
-            transition: all 0.2s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
-        
-        .view-memories:hover {
-            background-color: var(--primary);
-            color: white;
+        .day-btn.active, .day-btn:focus, .day-btn:hover {
+            background: linear-gradient(135deg, #ffb400 0%, #ff5a5f 100%);
+            color: #fff;
+            transform: scale(1.04);
+            box-shadow: 0 2px 8px rgba(255,180,0,0.10);
+            outline: none;
         }
-        
-        /* Timeline event styling */
         .timeline {
             position: relative;
-            padding-left: 20px;
+            padding-left: 12px;
         }
-        
         .timeline:before {
             content: '';
             position: absolute;
@@ -427,117 +451,315 @@
             width: 2px;
             background-color: var(--gray-200);
         }
-        
         .timeline-event {
             position: relative;
-            padding: 15px 0 15px 20px;
-            margin-bottom: 10px;
+            padding: 8px 0 8px 12px;
+            margin-bottom: 8px;
         }
-        
         .timeline-event:before {
             content: '';
             position: absolute;
-            top: 24px;
-            left: -8px;
-            width: 16px;
-            height: 16px;
+            top: 14px;
+            left: -6px;
+            width: 10px;
+            height: 10px;
             background-color: var(--primary);
             border: 2px solid white;
             border-radius: 50%;
             z-index: 1;
         }
-        
         .timeline-time {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
         }
-        
         .timeline-content {
             background-color: var(--gray-50);
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-left: 3px solid var(--primary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border-left: 2px solid var(--primary);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
-        
         .timeline-content h4 {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            font-size: 0.98rem;
+            font-weight: 700;
         }
-        
         .timeline-content p {
-            font-size: 14px;
+            font-size: 0.9rem;
             color: var(--gray-500);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
-        
         .timeline-location {
-            font-size: 12px;
+            font-size: 0.85rem;
             color: var(--primary);
             display: flex;
             align-items: center;
         }
-        
         .timeline-location:before {
             content: '\f3c5';
             font-family: 'Font Awesome 5 Free';
             font-weight: 900;
-            margin-right: 5px;
-            font-size: 10px;
+            margin-right: 4px;
+            font-size: 9px;
         }
-        
-        /* Form styling */
-        .create-trip-section {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: var(--gray-50);
-            border-radius: 12px;
+        .trips-section {
+            margin-top: 12px;
         }
-        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .add-trip-btn.expressive {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #00a699, #00d1c1);
+            color: #fff;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,166,153,0.10);
+            transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+            cursor: pointer;
+            position: relative;
+        }
+        .add-trip-btn .add-trip-icon {
+            background: #fff;
+            color: var(--primary);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .add-trip-btn.expressive:hover, .add-trip-btn.expressive:focus {
+            background: linear-gradient(135deg, #ff5a5f, #ffb400);
+            color: #fff;
+            transform: scale(1.04);
+            box-shadow: 0 4px 16px rgba(255,180,0,0.13);
+            outline: none;
+        }
+        .trip-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .trip-card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 4px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .trip-card:hover, .trip-card:focus-within {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            transform: translateY(-4px) scale(1.02);
+            outline: none;
+        }
+        .trip-card img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+        }
+        .trip-info {
+            padding: 12px 10px 8px 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1;
+            background: linear-gradient(135deg, #00a699, #00d1c1);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0,166,153,0.10);
+        }
+        .pill-badge.completed {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(67,233,123,0.10);
+        }
+        .trip-card.completed .pill-badge {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(67,233,123,0.10);
+        }
+        .trip-info h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .trip-dates {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .trip-progress {
+            margin-top: 6px;
+        }
+        .progress-bar {
+            height: 6px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #ffb400 0%, #ff5a5f 100%);
+            margin-bottom: 4px;
+        }
+        .progress-text {
+            font-size: 0.95rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .view-memories.expressive {
+            margin-top: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #00a699, #00d1c1);
+            border: none;
+            color: #fff;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,166,153,0.10);
+            transition: background 0.18s, color 0.18s, transform 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-memories.expressive:hover, .view-memories.expressive:focus {
+            background: linear-gradient(135deg, #ff5a5f, #ffb400);
+            color: #fff;
+            transform: scale(1.04);
+            box-shadow: 0 4px 16px rgba(255,180,0,0.13);
+            outline: none;
+        }
+        .create-trip-section.frosted {
+            margin-top: 18px;
+            padding: 18px 12px 12px 12px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            backdrop-filter: blur(6px) saturate(1.1);
+        }
         .form-field {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
-        
         .form-row {
             display: flex;
-            gap: 15px;
+            gap: 8px;
         }
-        
         .form-row .form-field {
             flex: 1;
         }
-        
         .form-field label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+            margin-bottom: 4px;
+            font-weight: 700;
         }
-        
         .form-field input,
         .form-field select {
             width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-200);
+            font-size: 0.95rem;
+            background: #fafbfc;
         }
-        
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 12px;
         }
-        
         .form-actions button {
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
         }
-        
         #cancel-trip {
-            background-color: var(--gray-200);
-            color: var(--gray-500);
+            background: #e0e0e0;
+            color: #888;
         }
-        
         #save-trip {
-            background-color: var(--primary);
-            color: white;
+            background: linear-gradient(135deg, #00a699, #00d1c1);
+            color: #fff;
+        }
+        #save-trip:hover, #save-trip:focus {
+            background: linear-gradient(135deg, #ff5a5f, #ffb400);
+            color: #fff;
+            outline: none;
+        }
+        @media (max-width: 900px) {
+            .trips-hero {
+                flex-direction: column;
+                padding: 18px 4px 8px 4px;
+                text-align: center;
+            }
+            .hero-content, .hero-illustration {
+                flex: unset;
+                width: 100%;
+                justify-content: center;
+            }
+            .hero-illustration img {
+                margin-top: 12px;
+                max-width: 120px;
+            }
+            .trips-main {
+                padding: 0 4px 8px 4px;
+            }
+            .planner-card {
+                flex-direction: column;
+                gap: 8px;
+                padding: 8px 2px 4px 2px;
+            }
+            .trip-cards-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+        @media (max-width: 600px) {
+            .hero-title {
+                font-size: 1.1rem;
+            }
+            .planner-card {
+                padding: 4px 1px 2px 1px;
+                border-radius: 10px;
+            }
+            .create-trip-section.frosted {
+                padding: 4px 1px 2px 1px;
+                border-radius: 10px;
+            }
         }
     </style>
 </body>
