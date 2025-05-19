@@ -134,12 +134,6 @@
                 </ul>
             </nav>
         <div class="user-section">
-            <button class="theme-toggle">
-                <input type="checkbox" class="theme-switch" id="theme-switch">
-                <label for="theme-switch" class="switch-label"></label>
-                <i class="fas fa-moon toggle-icon"></i>
-                <i class="fas fa-sun toggle-icon-sun"></i>
-                </button>
             <div class="user-profile">
                 <a href="profile.html">
                     <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
@@ -420,18 +414,6 @@
 
     <!-- Scripts -->
     <script>
-        // Load saved theme preference
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            const themeSwitch = document.getElementById('theme-switch');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                themeSwitch.checked = true;
-            }
-        });
-        
         // Preload images to improve initial loading experience
         function preloadImages() {
             // Common destinations to preload
@@ -440,14 +422,12 @@
                 "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&h=400&fit=crop", // Bali
                 "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop"  // Tokyo
             ];
-            
             // Preload images in background
             imagesToPreload.forEach(src => {
                 const img = new Image();
                 img.src = src;
             });
         }
-        
         // Start preloading images
         preloadImages();
     </script>
