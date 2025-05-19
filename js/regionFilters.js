@@ -59,8 +59,8 @@ function handleRegionFilterClick(e) {
 function filterDestinationsByRegion(region) {
     // Update current region
     currentRegion = region;
-    
-    // Filter destinations
+            
+            // Filter destinations
     const filteredDestinations = !region
         ? [...destinations]
         : destinations.filter(dest => dest.region === region);

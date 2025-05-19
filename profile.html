@@ -2014,6 +2014,530 @@
         .mapbox-marker {
             animation: marker-pulse 2s infinite;
         }
+
+        /* --- Beautiful Trip Card Redesign --- */
+        .glass-card {
+            background: rgba(255,255,255,0.75);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12), 0 1.5px 6px rgba(255,90,95,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: box-shadow 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1);
+            backdrop-filter: blur(8px) saturate(1.2);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            margin-bottom: 0;
+        }
+        .glass-card:hover {
+            box-shadow: 0 16px 40px rgba(255,90,95,0.18), 0 2px 8px rgba(31,38,135,0.10);
+            transform: translateY(-8px) scale(1.025);
+            border-color: var(--primary);
+        }
+        .trip-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+        .trip-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+        }
+        .glass-card:hover .trip-image-wrapper img {
+            transform: scale(1.08) rotate(-1deg);
+        }
+        .trip-image-gradient {
+            position: absolute;
+            left: 0; right: 0; bottom: 0; top: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 60%, rgba(255,90,95,0.10) 100%);
+            z-index: 1;
+        }
+        .trip-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(90deg, var(--primary), #ffb199);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 7px 18px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(255,90,95,0.12);
+            z-index: 2;
+            letter-spacing: 0.03em;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            opacity: 0.96;
+            pointer-events: none;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        .glass-card.adventure .trip-badge { background: linear-gradient(90deg, #FF5A5F, #FFB199); }
+        .glass-card.culture .trip-badge { background: linear-gradient(90deg, #1A73E8, #A7C7E7); }
+        .glass-card.nature .trip-badge { background: linear-gradient(90deg, #43C6AC, #191654); }
+        .glass-card.urban .trip-badge { background: linear-gradient(90deg, #232526, #FF5A5F); }
+        .trip-card-info {
+            padding: 24px 24px 20px 24px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .trip-card-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0 0 2px 0;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+        .trip-card-dates {
+            font-size: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 2px;
+        }
+        .trip-card-description {
+            font-size: 15px;
+            color: var(--text-medium);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        .trip-action-btn {
+            margin-top: 12px;
+            align-self: flex-start;
+            background: linear-gradient(90deg, var(--primary), #ffb199);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(255,90,95,0.10);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .trip-action-btn:hover {
+            background: linear-gradient(90deg, #ffb199, var(--primary));
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(255,90,95,0.18);
+        }
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,90,95,0.18);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.5;
+            pointer-events: none;
+            transition: width 0.5s cubic-bezier(.4,0,.2,1), height 0.5s cubic-bezier(.4,0,.2,1), opacity 0.5s;
+        }
+        .ripple:active::after {
+            width: 180px;
+            height: 180px;
+            opacity: 0;
+            transition: width 0.5s, height 0.5s, opacity 0.5s;
+        }
+        @media (max-width: 900px) {
+            .trip-card-info { padding: 18px 14px 16px 14px; }
+            .trip-card-title { font-size: 18px; }
+        }
+        @media (max-width: 600px) {
+            .glass-card { border-radius: 14px; }
+            .trip-card-info { padding: 14px 8px 12px 8px; }
+            .trip-card-title { font-size: 16px; }
+            .trip-card-dates { font-size: 13px; }
+            .trip-badge { font-size: 11px; padding: 5px 12px; }
+            .trip-image-wrapper { height: 120px; }
+        }
+
+        /* --- Saved Places & Reviews Card Redesign --- */
+        .saved-place-card.glass-card, .review-card.glass-card {
+            background: rgba(255,255,255,0.78);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.10), 0 1.5px 6px rgba(255,90,95,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: box-shadow 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1);
+            backdrop-filter: blur(8px) saturate(1.2);
+            border: 1.5px solid rgba(255,255,255,0.32);
+            margin-bottom: 0;
+        }
+        .saved-place-card.glass-card:hover, .review-card.glass-card:hover {
+            box-shadow: 0 16px 40px rgba(255,90,95,0.14), 0 2px 8px rgba(31,38,135,0.10);
+            transform: translateY(-8px) scale(1.025);
+            border-color: var(--primary);
+        }
+        .saved-place-image-wrapper, .review-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+        .saved-place-image, .review-place-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+        }
+        .saved-place-card.glass-card:hover .saved-place-image, .review-card.glass-card:hover .review-place-image {
+            transform: scale(1.08) rotate(-1deg);
+        }
+        .saved-place-gradient, .review-image-gradient {
+            position: absolute;
+            left: 0; right: 0; bottom: 0; top: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 60%, rgba(255,90,95,0.10) 100%);
+            z-index: 1;
+        }
+        .saved-place-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(90deg, var(--primary), #ffb199);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 7px 18px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(255,90,95,0.12);
+            z-index: 2;
+            letter-spacing: 0.03em;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            opacity: 0.96;
+            pointer-events: none;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        .saved-place-info, .review-content {
+            padding: 24px 24px 20px 24px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .saved-place-name, .review-place-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0 0 2px 0;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+        .saved-place-location {
+            font-size: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 2px;
+        }
+        .saved-place-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .saved-place-tag {
+            font-size: 12px;
+            background: linear-gradient(90deg, #f5f5f5, #ffe3e3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: var(--text-medium);
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 4px rgba(255,90,95,0.06);
+        }
+        .saved-place-tag:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(255, 90, 95, 0.2);
+        }
+        .saved-action-btn, .review-action-btn {
+            margin-top: 12px;
+            align-self: flex-start;
+            background: linear-gradient(90deg, var(--primary), #ffb199);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(255,90,95,0.10);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .saved-action-btn:hover, .review-action-btn:hover {
+            background: linear-gradient(90deg, #ffb199, var(--primary));
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(255,90,95,0.18);
+        }
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,90,95,0.18);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.5;
+            pointer-events: none;
+            transition: width 0.5s cubic-bezier(.4,0,.2,1), height 0.5s cubic-bezier(.4,0,.2,1), opacity 0.5s;
+        }
+        .ripple:active::after {
+            width: 180px;
+            height: 180px;
+            opacity: 0;
+            transition: width 0.5s, height 0.5s, opacity 0.5s;
+        }
+        @media (max-width: 900px) {
+            .saved-place-info, .review-content { padding: 18px 14px 16px 14px; }
+            .saved-place-name, .review-place-name { font-size: 17px; }
+        }
+        @media (max-width: 600px) {
+            .saved-place-card.glass-card, .review-card.glass-card { border-radius: 14px; }
+            .saved-place-info, .review-content { padding: 14px 8px 12px 8px; }
+            .saved-place-name, .review-place-name { font-size: 15px; }
+            .saved-place-badge { font-size: 11px; padding: 5px 12px; }
+            .saved-place-image-wrapper, .review-image-wrapper { height: 120px; }
+        }
+
+        /* --- Polished Review Card Visual Treat --- */
+        .review-card.glass-card {
+            background: rgba(255,255,255,0.82);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.13), 0 1.5px 6px rgba(255,90,95,0.10);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            transition: box-shadow 0.5s cubic-bezier(.4,0,.2,1), transform 0.5s cubic-bezier(.4,0,.2,1), border 0.5s;
+            border: 2.5px solid rgba(255,255,255,0.32);
+            margin-bottom: 0;
+            animation: fadeUpStaggered 0.7s var(--animation-easing) forwards;
+            animation-delay: calc(var(--review-index, 0) * 0.12s + 0.1s);
+        }
+        .review-card.glass-card:hover {
+            box-shadow: 0 20px 48px rgba(255,90,95,0.22), 0 4px 16px rgba(31,38,135,0.13);
+            transform: translateY(-10px) scale(1.03);
+            border: 2.5px solid var(--primary);
+        }
+        .review-image-wrapper {
+            position: relative;
+            width: 160px;
+            min-width: 160px;
+            height: 160px;
+            overflow: visible;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .review-place-image {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(31,38,135,0.10);
+            transition: box-shadow 0.4s, transform 0.4s;
+            position: relative;
+            z-index: 1;
+        }
+        .review-card.glass-card:hover .review-place-image {
+            box-shadow: 0 12px 32px rgba(255,90,95,0.18);
+            transform: scale(1.06) rotate(-1deg);
+        }
+        .review-image-gradient {
+            position: absolute;
+            left: 0; right: 0; bottom: 0; top: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.22) 60%, rgba(255,90,95,0.13) 100%);
+            border-radius: 18px;
+            z-index: 2;
+        }
+        .review-avatar {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fff, #ffe3e3 80%);
+            box-shadow: 0 2px 8px rgba(255,90,95,0.13);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            border: 2.5px solid #fff;
+            overflow: hidden;
+        }
+        .review-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .review-content {
+            flex: 1;
+            padding: 32px 32px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        .review-details-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+        .review-location {
+            color: var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .review-verified {
+            color: #1A73E8;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .review-place-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0 0 2px 0;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+        .review-rating {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 2px;
+            font-size: 22px;
+            color: gold;
+            transition: color 0.3s;
+        }
+        .review-rating i {
+            filter: drop-shadow(0 1px 2px rgba(255,90,95,0.10));
+            transition: transform 0.3s, color 0.3s;
+        }
+        .review-card.glass-card:hover .review-rating i {
+            color: #FFD700;
+            transform: scale(1.18) rotate(-8deg);
+        }
+        .review-text {
+            font-size: 16px;
+            color: var(--text-medium);
+            font-style: italic;
+            background: linear-gradient(90deg, #fff 80%, #ffe3e3 100%);
+            border-left: 4px solid var(--primary);
+            padding: 18px 22px 18px 18px;
+            border-radius: 12px;
+            margin: 8px 0 0 0;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(255,90,95,0.06);
+            line-height: 1.7;
+        }
+        .review-text i {
+            color: var(--primary);
+            margin-right: 10px;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        .review-fab {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #ffb199);
+            color: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(255,90,95,0.13);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10;
+            transition: background 0.3s, transform 0.2s;
+            overflow: hidden;
+        }
+        .review-fab:hover {
+            background: linear-gradient(135deg, #ffb199, var(--primary));
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 4px 16px rgba(255,90,95,0.18);
+        }
+        .review-fab::after {
+            content: attr(title);
+            position: absolute;
+            top: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-dark);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 20;
+        }
+        .review-fab:hover::after {
+            opacity: 0.98;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        @media (max-width: 900px) {
+            .review-content { padding: 18px 10px 16px 10px; }
+            .review-place-name { font-size: 18px; }
+            .review-image-wrapper { width: 120px; min-width: 120px; height: 120px; }
+            .review-place-image { width: 100px; height: 100px; }
+            .review-avatar { width: 36px; height: 36px; bottom: -12px; }
+            .review-avatar img { width: 30px; height: 30px; }
+        }
+        @media (max-width: 600px) {
+            .review-card.glass-card { border-radius: 14px; flex-direction: column; }
+            .review-content { padding: 14px 6px 12px 6px; }
+            .review-place-name { font-size: 15px; }
+            .review-image-wrapper { width: 100%; min-width: 100%; height: 100px; }
+            .review-place-image { width: 80px; height: 80px; }
+            .review-avatar { width: 28px; height: 28px; bottom: -8px; }
+            .review-avatar img { width: 22px; height: 22px; }
+            .review-fab { width: 38px; height: 38px; font-size: 16px; top: 12px; right: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -2345,87 +2869,99 @@
                 <p class="section-description">Places Emma has bookmarked for future adventures</p>
                 
                 <div class="saved-places-grid">
-                    <div class="saved-place-card" style="--card-delay: 0.1s">
-                        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80" alt="Cappadocia" class="saved-place-image">
+                    <div class="saved-place-card glass-card" style="--card-delay: 0.1s">
+                        <div class="saved-place-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80" alt="Cappadocia" class="saved-place-image">
+                            <div class="saved-place-gradient"></div>
+                            <span class="saved-place-badge">Hot Air Balloon</span>
+                        </div>
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Cappadocia</h3>
-                            <div class="saved-place-location">
-                                <i class="fas fa-map-marker-alt"></i> Turkey
-                            </div>
+                            <div class="saved-place-location"><i class="fas fa-map-marker-alt"></i> Turkey</div>
                             <div class="saved-place-tags">
-                                <span class="saved-place-tag">Hot Air Balloon</span>
                                 <span class="saved-place-tag">Caves</span>
                             </div>
+                            <button class="saved-action-btn ripple">View Details</button>
                         </div>
                     </div>
                     
-                    <div class="saved-place-card" style="--card-delay: 0.2s">
-                        <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80" alt="Machu Picchu" class="saved-place-image">
+                    <div class="saved-place-card glass-card" style="--card-delay: 0.2s">
+                        <div class="saved-place-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80" alt="Machu Picchu" class="saved-place-image">
+                            <div class="saved-place-gradient"></div>
+                            <span class="saved-place-badge">Hiking</span>
+                        </div>
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Machu Picchu</h3>
-                            <div class="saved-place-location">
-                                <i class="fas fa-map-marker-alt"></i> Peru
-                            </div>
+                            <div class="saved-place-location"><i class="fas fa-map-marker-alt"></i> Peru</div>
                             <div class="saved-place-tags">
-                                <span class="saved-place-tag">Hiking</span>
                                 <span class="saved-place-tag">Historic</span>
                             </div>
+                            <button class="saved-action-btn ripple">View Details</button>
                         </div>
                     </div>
                     
-                    <div class="saved-place-card" style="--card-delay: 0.3s">
-                        <img src="https://images.unsplash.com/photo-1467377791767-c929b5dc9a23?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Maldives" class="saved-place-image">
+                    <div class="saved-place-card glass-card" style="--card-delay: 0.3s">
+                        <div class="saved-place-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1467377791767-c929b5dc9a23?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Maldives" class="saved-place-image">
+                            <div class="saved-place-gradient"></div>
+                            <span class="saved-place-badge">Beach</span>
+                        </div>
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Maldives</h3>
-                            <div class="saved-place-location">
-                                <i class="fas fa-map-marker-alt"></i> Indian Ocean
-                            </div>
+                            <div class="saved-place-location"><i class="fas fa-map-marker-alt"></i> Indian Ocean</div>
                             <div class="saved-place-tags">
-                                <span class="saved-place-tag">Beach</span>
                                 <span class="saved-place-tag">Luxury</span>
                             </div>
+                            <button class="saved-action-btn ripple">View Details</button>
                         </div>
                     </div>
                     
-                    <div class="saved-place-card" style="--card-delay: 0.4s">
-                        <img src="https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=800&q=80" alt="Petra" class="saved-place-image">
+                    <div class="saved-place-card glass-card" style="--card-delay: 0.4s">
+                        <div class="saved-place-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=800&q=80" alt="Petra" class="saved-place-image">
+                            <div class="saved-place-gradient"></div>
+                            <span class="saved-place-badge">Historic</span>
+                        </div>
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Petra</h3>
-                            <div class="saved-place-location">
-                                <i class="fas fa-map-marker-alt"></i> Jordan
-                            </div>
+                            <div class="saved-place-location"><i class="fas fa-map-marker-alt"></i> Jordan</div>
                             <div class="saved-place-tags">
-                                <span class="saved-place-tag">Historic</span>
                                 <span class="saved-place-tag">UNESCO</span>
                             </div>
+                            <button class="saved-action-btn ripple">View Details</button>
                         </div>
                     </div>
                     
-                    <div class="saved-place-card" style="--card-delay: 0.5s">
-                        <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=800&q=80" alt="Bora Bora" class="saved-place-image">
+                    <div class="saved-place-card glass-card" style="--card-delay: 0.5s">
+                        <div class="saved-place-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=800&q=80" alt="Bora Bora" class="saved-place-image">
+                            <div class="saved-place-gradient"></div>
+                            <span class="saved-place-badge">Honeymoon</span>
+                        </div>
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Bora Bora</h3>
-                            <div class="saved-place-location">
-                                <i class="fas fa-map-marker-alt"></i> French Polynesia
-                            </div>
+                            <div class="saved-place-location"><i class="fas fa-map-marker-alt"></i> French Polynesia</div>
                             <div class="saved-place-tags">
                                 <span class="saved-place-tag">Beach</span>
-                                <span class="saved-place-tag">Honeymoon</span>
                             </div>
+                            <button class="saved-action-btn ripple">View Details</button>
                         </div>
                     </div>
                     
-                    <div class="saved-place-card" style="--card-delay: 0.6s">
-                        <img src="https://images.unsplash.com/photo-1492136344046-866c85e0bf04?auto=format&fit=crop&w=800&q=80" alt="Provence" class="saved-place-image">
+                    <div class="saved-place-card glass-card" style="--card-delay: 0.6s">
+                        <div class="saved-place-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1492136344046-866c85e0bf04?auto=format&fit=crop&w=800&q=80" alt="Provence" class="saved-place-image">
+                            <div class="saved-place-gradient"></div>
+                            <span class="saved-place-badge">Lavender</span>
+                        </div>
                         <div class="saved-place-info">
                             <h3 class="saved-place-name">Provence</h3>
-                            <div class="saved-place-location">
-                                <i class="fas fa-map-marker-alt"></i> France
-                            </div>
+                            <div class="saved-place-location"><i class="fas fa-map-marker-alt"></i> France</div>
                             <div class="saved-place-tags">
-                                <span class="saved-place-tag">Lavender</span>
                                 <span class="saved-place-tag">Wine</span>
                             </div>
+                            <button class="saved-action-btn ripple">View Details</button>
                         </div>
                     </div>
                 </div>
@@ -2435,65 +2971,84 @@
             <div id="trips-content" class="tab-content">
                 <h2 class="section-title">Travel Timeline</h2>
                 <p class="section-description">Emma's journey around the world</p>
-                
                 <div class="trips-timeline">
                     <div class="timeline-line"></div>
-                    
+                    <!-- Trip Entry 1 -->
                     <div class="trip-entry" style="--entry-index: 0">
                         <div class="trip-date">June 2023</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
-                            <div class="trip-card">
-                                <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80" alt="Santorini">
+                            <div class="trip-card glass-card adventure">
+                                <div class="trip-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80" alt="Santorini">
+                                    <div class="trip-image-gradient"></div>
+                                    <span class="trip-badge">Adventure</span>
+                                </div>
                                 <div class="trip-card-info">
                                     <h3 class="trip-card-title">Greek Island Hopping</h3>
-                                    <div class="trip-card-dates">June 10 - June 24, 2023</div>
+                                    <div class="trip-card-dates"><i class="fas fa-calendar-alt"></i> June 10 - June 24, 2023</div>
                                     <p class="trip-card-description">Explored the stunning islands of Santorini, Mykonos, and Crete. Highlights included watching the sunset in Oia and swimming in crystal clear waters.</p>
+                                    <button class="trip-action-btn ripple">View Memories</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+                    <!-- Trip Entry 2 -->
                     <div class="trip-entry" style="--entry-index: 1">
                         <div class="trip-date">April 2023</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
-                            <div class="trip-card">
-                                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris">
+                            <div class="trip-card glass-card culture">
+                                <div class="trip-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris">
+                                    <div class="trip-image-gradient"></div>
+                                    <span class="trip-badge">Culture</span>
+                                </div>
                                 <div class="trip-card-info">
                                     <h3 class="trip-card-title">Spring in Paris</h3>
-                                    <div class="trip-card-dates">April 5 - April 12, 2023</div>
+                                    <div class="trip-card-dates"><i class="fas fa-calendar-alt"></i> April 5 - April 12, 2023</div>
                                     <p class="trip-card-description">A week-long cultural journey through the romantic streets of Paris. Visited the Louvre, Eiffel Tower, and enjoyed countless pastries at local cafes.</p>
+                                    <button class="trip-action-btn ripple">View Memories</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+                    <!-- Trip Entry 3 -->
                     <div class="trip-entry" style="--entry-index: 2">
                         <div class="trip-date">January 2023</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
-                            <div class="trip-card">
-                                <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                            <div class="trip-card glass-card nature">
+                                <div class="trip-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                                    <div class="trip-image-gradient"></div>
+                                    <span class="trip-badge">Nature</span>
+                                </div>
                                 <div class="trip-card-info">
                                     <h3 class="trip-card-title">Swiss Winter Wonderland</h3>
-                                    <div class="trip-card-dates">January 15 - January 25, 2023</div>
+                                    <div class="trip-card-dates"><i class="fas fa-calendar-alt"></i> January 15 - January 25, 2023</div>
                                     <p class="trip-card-description">Ski trip to the Swiss Alps. Stayed in a charming chalet, enjoyed mountain views, and experienced some of the best slopes in Europe.</p>
+                                    <button class="trip-action-btn ripple">View Memories</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+                    <!-- Trip Entry 4 -->
                     <div class="trip-entry" style="--entry-index: 3">
                         <div class="trip-date">October 2022</div>
                         <div class="trip-dot"></div>
                         <div class="trip-content">
-                            <div class="trip-card">
-                                <img src="https://images.unsplash.com/photo-1544085311-11a028465b03?auto=format&fit=crop&w=800&q=80" alt="Japan">
+                            <div class="trip-card glass-card urban">
+                                <div class="trip-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1544085311-11a028465b03?auto=format&fit=crop&w=800&q=80" alt="Japan">
+                                    <div class="trip-image-gradient"></div>
+                                    <span class="trip-badge">Urban</span>
+                                </div>
                                 <div class="trip-card-info">
                                     <h3 class="trip-card-title">Japan Adventure</h3>
-                                    <div class="trip-card-dates">October 2 - October 18, 2022</div>
+                                    <div class="trip-card-dates"><i class="fas fa-calendar-alt"></i> October 2 - October 18, 2022</div>
                                     <p class="trip-card-description">Autumn journey through Tokyo, Kyoto, and Osaka. Experienced traditional culture, modern technology, and incredible cuisine.</p>
+                                    <button class="trip-action-btn ripple">View Memories</button>
                                 </div>
                             </div>
                         </div>
@@ -2505,69 +3060,101 @@
             <div id="reviews-content" class="tab-content">
                 <h2 class="section-title">Travel Reviews</h2>
                 <p class="section-description">Emma's honest opinions about places she's visited</p>
-                
                 <div class="reviews-container">
-                    <div class="review-card" style="--review-index: 0">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcB1AFZTuAg_IatyvMyJabk9UdyiYQ3pUO9A&s" alt="Ritz Paris" class="review-place-image">
+                    <div class="review-card glass-card" style="--review-index: 0">
+                        <div class="review-image-wrapper">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcB1AFZTuAg_IatyvMyJabk9UdyiYQ3pUO9A&s" alt="Ritz Paris" class="review-place-image">
+                            <div class="review-image-gradient"></div>
+                            <div class="review-avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma"></div>
+                        </div>
                         <div class="review-content">
+                            <div class="review-details-row">
+                                <span class="review-location"><i class="fas fa-map-marker-alt"></i> Paris, France</span>
+                                <span class="review-date">April 2023</span>
+                                <span class="review-verified"><i class="fas fa-check-circle"></i> Verified</span>
+                            </div>
                             <h3 class="review-place-name">Ritz Paris Hotel</h3>
                             <div class="review-rating">
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </div>
-                            <p class="review-text">An absolutely stunning experience from start to finish. The service was impeccable, the rooms were luxurious, and the location couldn't be better. The concierge arranged everything perfectly for our stay.</p>
-                            <div class="review-date">Reviewed in April 2023</div>
+                            <blockquote class="review-text"><i class="fas fa-quote-left"></i> An absolutely stunning experience from start to finish. The service was impeccable, the rooms were luxurious, and the location couldn't be better. The concierge arranged everything perfectly for our stay.</blockquote>
+                            <button class="review-fab ripple" title="Share"><i class="fas fa-share-alt"></i></button>
                         </div>
                     </div>
-                    
-                    <div class="review-card" style="--review-index: 1">
-                        <img src="https://santorini.villas/wp-content/uploads/2024/01/7bcb0fe8_37ed_4c82_9342_15b59c3719c4.limghandler-600x420.jpg" alt="Santorini Restaurant" class="review-place-image">
+                    <div class="review-card glass-card" style="--review-index: 1">
+                        <div class="review-image-wrapper">
+                            <img src="https://santorini.villas/wp-content/uploads/2024/01/7bcb0fe8_37ed_4c82_9342_15b59c3719c4.limghandler-600x420.jpg" alt="Santorini Restaurant" class="review-place-image">
+                            <div class="review-image-gradient"></div>
+                            <div class="review-avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma"></div>
+                        </div>
                         <div class="review-content">
+                            <div class="review-details-row">
+                                <span class="review-location"><i class="fas fa-map-marker-alt"></i> Santorini, Greece</span>
+                                <span class="review-date">June 2023</span>
+                                <span class="review-verified"><i class="fas fa-check-circle"></i> Verified</span>
+                            </div>
                             <h3 class="review-place-name">Argo Restaurant, Santorini</h3>
                             <div class="review-rating">
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star-half-alt" style="color: gold;"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
                             </div>
-                            <p class="review-text">Incredible seafood with a view that's worth every penny. We had the grilled octopus and sea bass which were perfectly prepared. The sunset view from the terrace was breathtaking. Reservations are a must!</p>
-                            <div class="review-date">Reviewed in June 2023</div>
+                            <blockquote class="review-text"><i class="fas fa-quote-left"></i> Incredible seafood with a view that's worth every penny. We had the grilled octopus and sea bass which were perfectly prepared. The sunset view from the terrace was breathtaking. Reservations are a must!</blockquote>
+                            <button class="review-fab ripple" title="Share"><i class="fas fa-share-alt"></i></button>
                         </div>
                     </div>
-                    
-                    <div class="review-card" style="--review-index: 2">
-                        <img src="https://www.heidi.com/_next/image?url=https%3A%2F%2Fa.storyblok.com%2Ff%2F150663%2F6066x4044%2Fb1bb58a315%2Fzermatt-ski-resort-at-sunset.jpg&w=1920&q=75" alt="Swiss Ski Resort" class="review-place-image">
+                    <div class="review-card glass-card" style="--review-index: 2">
+                        <div class="review-image-wrapper">
+                            <img src="https://www.heidi.com/_next/image?url=https%3A%2F%2Fa.storyblok.com%2Ff%2F150663%2F6066x4044%2Fb1bb58a315%2Fzermatt-ski-resort-at-sunset.jpg&w=1920&q=75" alt="Swiss Ski Resort" class="review-place-image">
+                            <div class="review-image-gradient"></div>
+                            <div class="review-avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma"></div>
+                        </div>
                         <div class="review-content">
+                            <div class="review-details-row">
+                                <span class="review-location"><i class="fas fa-map-marker-alt"></i> Zermatt, Switzerland</span>
+                                <span class="review-date">January 2023</span>
+                                <span class="review-verified"><i class="fas fa-check-circle"></i> Verified</span>
+                            </div>
                             <h3 class="review-place-name">Zermatt Ski Resort</h3>
                             <div class="review-rating">
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </div>
-                            <p class="review-text">World-class skiing with the most spectacular mountain views. The resort is well-organized with excellent lifts and a variety of runs for all skill levels. The après-ski scene is lively and fun too!</p>
-                            <div class="review-date">Reviewed in January 2023</div>
+                            <blockquote class="review-text"><i class="fas fa-quote-left"></i> World-class skiing with the most spectacular mountain views. The resort is well-organized with excellent lifts and a variety of runs for all skill levels. The après-ski scene is lively and fun too!</blockquote>
+                            <button class="review-fab ripple" title="Share"><i class="fas fa-share-alt"></i></button>
                         </div>
                     </div>
-                    
-                    <div class="review-card" style="--review-index: 3">
-                        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80" alt="Tokyo Hotel" class="review-place-image">
+                    <div class="review-card glass-card" style="--review-index: 3">
+                        <div class="review-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80" alt="Tokyo Hotel" class="review-place-image">
+                            <div class="review-image-gradient"></div>
+                            <div class="review-avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma"></div>
+                        </div>
                         <div class="review-content">
+                            <div class="review-details-row">
+                                <span class="review-location"><i class="fas fa-map-marker-alt"></i> Tokyo, Japan</span>
+                                <span class="review-date">October 2022</span>
+                                <span class="review-verified"><i class="fas fa-check-circle"></i> Verified</span>
+                            </div>
                             <h3 class="review-place-name">Park Hyatt Tokyo</h3>
                             <div class="review-rating">
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
-                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </div>
-                            <p class="review-text">An iconic hotel with exceptional service and breathtaking views of Tokyo skyline. The New York Bar on the 52nd floor is a must-visit, especially in the evening when the jazz band plays.</p>
-                            <div class="review-date">Reviewed in October 2022</div>
+                            <blockquote class="review-text"><i class="fas fa-quote-left"></i> An iconic hotel with exceptional service and breathtaking views of Tokyo skyline. The New York Bar on the 52nd floor is a must-visit, especially in the evening when the jazz band plays.</blockquote>
+                            <button class="review-fab ripple" title="Share"><i class="fas fa-share-alt"></i></button>
                         </div>
                     </div>
                 </div>
