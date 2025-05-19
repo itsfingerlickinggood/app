@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Destinations | Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Core layout adjustments */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Updated header - simplified with subtle shadow */
+        .app-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-primary);
+            border-bottom: 4px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            z-index: var(--z-nav);
+            position: relative;
+        }
+        
+        /* Split-view layout with 40/60 ratio */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .left-panel {
+            flex: 0 0 40%;
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+            position: relative;
+            padding-top: 12px; /* Reduced top padding */
+        }
+        
+        .right-panel {
+            flex: 0 0 60%;
+            position: relative;
+        }
+        
+        /* Updated region filters with continent names */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 12px 20px; /* Additional padding */
+        }
+        
+        .region-filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .region-filter {
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            border: none;
+            background-color: #F5F5F5;
+            color: #222222;
+        }
+        
+        .region-filter.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .region-filter:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Enhanced destination cards with larger size */
+        .saved-destinations {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 0 20px 24px;
+        }
+        
+        .destination-card {
+            height: 200px; /* Increased height */
+            border-radius: 16px; /* Larger radius */
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform 250ms ease, box-shadow 250ms ease;
+            border: 1px solid white;
+            will-change: transform, box-shadow;
+        }
+        
+        .destination-card:hover {
+            transform: scale(1.03) perspective(1000px) rotate3d(1, 0, 0, 2deg);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .destination-card.active {
+            box-shadow: 0 0 0 3px var(--primary), 0 6px 16px rgba(0,0,0,0.15);
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 750ms ease;
+        }
+        
+        .destination-card:hover .card-image {
+            transform: scale(1.05);
+        }
+        
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.1));
+        }
+        
+        /* Information overlay that slides up on hover */
+        .info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 16px;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 350ms ease;
+            z-index: 4;
+        }
+        
+        .destination-card:hover .info-overlay {
+            transform: translateY(0);
+        }
+        
+        .weather {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .weather i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .distance {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .travel-time {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-buttons button {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 250ms ease, transform 250ms ease;
+        }
+        
+        .action-buttons button:nth-child(1) {
+            transition-delay: 50ms;
+        }
+        
+        .action-buttons button:nth-child(2) {
+            transition-delay: 100ms;
+        }
+        
+        .action-buttons button:nth-child(3) {
+            transition-delay: 150ms;
+        }
+        
+        .destination-card:hover .action-buttons button {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .action-buttons button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .card-title {
+            position: absolute;
+            bottom: 48px; /* Repositioned to bottom */
+            left: 16px;
+            right: 16px;
+            font-size: 22px; /* Larger size */
+            font-weight: 700; /* Bolder */
+            color: var(--primary); /* Using red brand color */
+            margin: 0;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            z-index: 3;
+            letter-spacing: -0.2px;
+        }
+        
+        .card-location {
+            position: absolute;
+            bottom: 24px;
+            left: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            margin: 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .card-location i {
+            font-size: 12px;
+            color: var(--primary-light);
+        }
+        
+        .card-rating {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 3;
+            background-color: rgba(0,0,0,0.6);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        
+        .star-icon {
+            color: #FFD700;
+            font-size: 14px;
+        }
+        
+        .rating-score {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .favorite-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+            z-index: 3;
+            border: none;
+            transition: transform 0.2s ease;
+        }
+        
+        .favorite-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .favorite-button i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        /* Map styling */
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        /* Custom map markers and labels */
+        .map-marker {
+            width: 12px;
+            height: 12px;
+            background-color: #FF5A5F;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.25s ease-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        
+        .map-marker:hover, .map-marker.hover {
+            transform: scale(1.2);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+            animation: markerPulse 2s infinite;
+        }
+        
+        .map-marker.active {
+            transform: scale(1.4);
+            background-color: #FF3B41;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            z-index: 11;
+        }
+        
+        @keyframes markerPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(255, 90, 95, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 95, 0);
+            }
+        }
+        
+        .map-marker-label {
+            position: absolute;
+            top: 18px; /* Position below the marker with 8px gap */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333333;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .map-marker:hover .map-marker-label {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Animated marker appearance */
+        @keyframes markerAppear {
+            0% { 
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .map-marker {
+            animation: markerAppear 0.5s forwards;
+            animation-delay: calc(var(--index) * 0.05s);
+            /* Start with opacity 0, but the animation will make it visible */
+            opacity: 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .left-panel {
+                flex: 0 0 50%;
+            }
+            
+            .right-panel {
+                flex: 0 0 50%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                flex: none;
+                width: 100%;
+            }
+            
+            .left-panel {
+                height: 60%;
+                order: 2;
+            }
+            
+            .right-panel {
+                height: 40%;
+                order: 1;
+            }
+            
+            .destination-card {
+                height: 160px;
+            }
+        }
+        
+        /* User Location Marker */
+        .user-location-marker {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            z-index: 5;
+        }
+        
+        .user-location-dot {
+            background-color: #0080FF;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            z-index: 2;
+        }
+        
+        .user-location-pulse {
+            background-color: rgba(0,128,255,0.3);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: pulse 2s infinite;
+            z-index: 1;
+        }
+        
+        .user-location-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .user-location-marker:hover .user-location-tooltip {
+            opacity: 1;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            70% { transform: scale(2); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        
+        /* Near Me filter button */
+        .near-me-filter {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #0080FF;
+            color: white;
+            border: none;
+        }
+        
+        .near-me-filter i {
+            font-size: 12px;
+        }
+        
+        /* Map Controls Enhancement */
+        .map-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 5;
+        }
+        
+        .map-control-button {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .map-control-button:hover {
+            background-color: #f5f5f5;
+            transform: translateY(-2px);
+        }
+        
+        .map-control-button i {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .map-layers {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            padding: 10px;
+            z-index: 5;
+        }
+        
+        .map-layers-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .map-layer-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            padding: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .map-layer-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .map-layer-option.active {
+            background-color: #f0f0f0;
+        }
+        
+        .map-layer-option span {
+            font-size: 12px;
+        }
+        
+        .map-layer-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        /* Local time display removed */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="logo">
+                <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html" class="active"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+                </ul>
+            </nav>
+            <div class="user-section">
+                <button class="theme-toggle">
+                    <input type="checkbox" class="theme-switch" id="theme-switch">
+                    <label for="theme-switch" class="switch-label"></label>
+                    <i class="fas fa-moon toggle-icon"></i>
+                    <i class="fas fa-sun toggle-icon-sun"></i>
+                </button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>Emma</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel - Destinations List -->
+            <div class="left-panel">
+                <!-- Region Filters -->
+                <div class="filter-container">
+                    <div class="region-filters">
+                        <button class="region-filter active" data-region="all">All Destinations</button>
+                        <button class="region-filter near-me-filter" data-region="near-me">
+                            <i class="fas fa-location-arrow"></i> Near Me
+                        </button>
+                        <button class="region-filter" data-region="europe">Europe</button>
+                        <button class="region-filter" data-region="asia">Asia</button>
+                        <button class="region-filter" data-region="africa">Africa</button>
+                        <button class="region-filter" data-region="namerica">North America</button>
+                        <button class="region-filter" data-region="samerica">South America</button>
+                        <button class="region-filter" data-region="oceania">Oceania</button>
+                    </div>
+                </div>
+                
+                <!-- Saved Destinations -->
+                <div class="saved-destinations">
+                    <!-- Example saved destination cards -->
+                    <div class="destination-card" data-id="paris">
+                        <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80" alt="Paris" class="card-image">
+                        <div class="card-overlay"></div>
+                        <button class="favorite-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="card-rating">
+                            <i class="fas fa-star star-icon"></i>
+                            <span class="rating-score">4.8</span>
+                        </div>
+                        <div class="info-overlay">
+                            <div class="weather"><i class="fas fa-sun"></i> 72°F</div>
+                            <div class="distance">5,834 miles away</div>
+                            <div class="travel-time">10h 35m flight</div>
+                            <div class="action-buttons">
+                                <button>View details</button>
+                                <button>Navigate</button>
+                                <button>Share</button>
+                            </div>
+                        </div>
+                        <h3 class="card-title">Paris</h3>
+                        <div class="card-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>France, Europe</span>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card" data-id="tokyo">
+                        <img src="https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=800&q=80" alt="Tokyo" class="card-image">
+                        <div class="card-overlay"></div>
+                        <button class="favorite-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="card-rating">
+                            <i class="fas fa-star star-icon"></i>
+                            <span class="rating-score">4.9</span>
+                        </div>
+                        <div class="info-overlay">
+                            <div class="weather"><i class="fas fa-cloud-sun"></i> 68°F</div>
+                            <div class="distance">7,432 miles away</div>
+                            <div class="travel-time">14h 10m flight</div>
+                            <div class="action-buttons">
+                                <button>View details</button>
+                                <button>Navigate</button>
+                                <button>Share</button>
+                            </div>
+                        </div>
+                        <h3 class="card-title">Tokyo</h3>
+                        <div class="card-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Japan, Asia</span>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card" data-id="santorini">
+                        <img src="https://images.unsplash.com/photo-1538683270504-3d09ad7ae739?auto=format&fit=crop&w=800&q=80" alt="Santorini" class="card-image">
+                        <div class="card-overlay"></div>
+                        <button class="favorite-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="card-rating">
+                            <i class="fas fa-star star-icon"></i>
+                            <span class="rating-score">4.7</span>
+                        </div>
+                        <div class="info-overlay">
+                            <div class="weather"><i class="fas fa-sun"></i> 77°F</div>
+                            <div class="distance">6,214 miles away</div>
+                            <div class="travel-time">11h 25m flight</div>
+                            <div class="action-buttons">
+                                <button>View details</button>
+                                <button>Navigate</button>
+                                <button>Share</button>
+                            </div>
+                        </div>
+                        <h3 class="card-title">Santorini</h3>
+                        <div class="card-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Greece, Europe</span>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card" data-id="rome">
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Rome" class="card-image">
+                        <div class="card-overlay"></div>
+                        <button class="favorite-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="card-rating">
+                            <i class="fas fa-star star-icon"></i>
+                            <span class="rating-score">4.6</span>
+                        </div>
+                        <div class="info-overlay">
+                            <div class="weather"><i class="fas fa-sun"></i> 75°F</div>
+                            <div class="distance">5,528 miles away</div>
+                            <div class="travel-time">9h 50m flight</div>
+                            <div class="action-buttons">
+                                <button>View details</button>
+                                <button>Navigate</button>
+                                <button>Share</button>
+                            </div>
+                        </div>
+                        <h3 class="card-title">Rome</h3>
+                        <div class="card-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Italy, Europe</span>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card" data-id="kyoto">
+                        <img src="https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=800&q=80" alt="Kyoto" class="card-image">
+                        <div class="card-overlay"></div>
+                        <button class="favorite-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="card-rating">
+                            <i class="fas fa-star star-icon"></i>
+                            <span class="rating-score">4.5</span>
+                        </div>
+                        <div class="info-overlay">
+                            <div class="weather"><i class="fas fa-cloud"></i> 65°F</div>
+                            <div class="distance">7,258 miles away</div>
+                            <div class="travel-time">13h 45m flight</div>
+                            <div class="action-buttons">
+                                <button>View details</button>
+                                <button>Navigate</button>
+                                <button>Share</button>
+                            </div>
+                        </div>
+                        <h3 class="card-title">Kyoto</h3>
+                        <div class="card-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Japan, Asia</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Map -->
+            <div class="right-panel">
+                <div id="map"></div>
+                
+                <!-- Map Controls -->
+                <div class="map-controls">
+                    <button class="map-control-button" id="center-on-me">
+                        <i class="fas fa-location-arrow"></i>
+                    </button>
+                    <button class="map-control-button" id="screenshot-map">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                
+                <!-- Map Layers Panel -->
+                <div class="map-layers">
+                    <div class="map-layers-title">Map Style</div>
+                    <div class="map-layer-option active" data-style="light">
+                        <div class="map-layer-icon" style="background-color: #f8f8f8;"></div>
+                        <span>Streets</span>
+                    </div>
+                    <div class="map-layer-option" data-style="satellite">
+                        <div class="map-layer-icon" style="background-image: url('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/0,0,1,0,0/16x16?access_token=pk.eyJ1IjoieC0wMDciLCJhIjoiY21hc2M2YzlyMGswejJrc2ZkcmxrczdhcCJ9.WDicPdPwfpF6W0NwUXRL8w');"></div>
+                        <span>Satellite</span>
+                    </div>
+                    <div class="map-layer-option" data-style="outdoors">
+                        <div class="map-layer-icon" style="background-color: #e8f0e8;"></div>
+                        <span>Outdoors</span>
+                    </div>
+                    <div class="map-layer-option" data-style="dark">
+                        <div class="map-layer-icon" style="background-color: #242424;"></div>
+                        <span>Dark</span>
+                    </div>
+                </div>
+                
+                <!-- Local Time Display Removed -->
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { destinations } from './js/data.js';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map
+            mapboxgl.accessToken = 'pk.eyJ1IjoieC0wMDciLCJhIjoiY21hc2M2YzlyMGswejJrc2ZkcmxrczdhcCJ9.WDicPdPwfpF6W0NwUXRL8w';
+            
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/light-v10',
+                center: [12, 42], // Centered on Mediterranean
+                zoom: 5,
+                maxZoom: 16,
+                minZoom: 2,
+                pitch: 0, // Ensure flat map (no 3D)
+                bearing: 0,
+                attributionControl: false // Add separately
+            });
+            
+            // Add minimal controls
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: false,
+                visualizePitch: false
+            }), 'bottom-right');
+            
+            // Add attribution control separately
+            map.addControl(new mapboxgl.AttributionControl({
+                compact: true
+            }), 'bottom-right');
+            
+            // Example destination data
+            const savedDestinations = [
+                {
+                    id: 'paris',
+                    name: 'Paris',
+                    country: 'France',
+                    region: 'Europe',
+                    coordinates: { lng: 2.3522, lat: 48.8566 },
+                    rating: 4.8,
+                    image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+                },
+                {
+                    id: 'tokyo',
+                    name: 'Tokyo',
+                    country: 'Japan',
+                    region: 'Asia',
+                    coordinates: { lng: 139.6503, lat: 35.6762 },
+                    rating: 4.9,
+                    image: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+                },
+                {
+                    id: 'santorini',
+                    name: 'Santorini',
+                    country: 'Greece',
+                    region: 'Europe',
+                    coordinates: { lng: 25.4615, lat: 36.3932 },
+                    rating: 4.7,
+                    image: 'https://images.unsplash.com/photo-1538683270504-3d09ad7ae739?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+                },
+                {
+                    id: 'rome',
+                    name: 'Rome',
+                    country: 'Italy',
+                    region: 'Europe',
+                    coordinates: { lng: 12.4964, lat: 41.9028 },
+                    rating: 4.6,
+                    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+                },
+                {
+                    id: 'kyoto',
+                    name: 'Kyoto',
+                    country: 'Japan',
+                    region: 'Asia',
+                    coordinates: { lng: 135.7681, lat: 35.0116 },
+                    rating: 4.5,
+                    image: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+                }
+            ];
+            
+            // Load map markers when map is ready
+            map.on('load', function() {
+                // Remove unnecessary map elements
+                map.once('styledata', () => {
+                    // Simplify map by removing POIs, buildings, minor roads
+                    const hiddenLayers = ['poi', 'poi-label', 'building', 'indoor', 'road-minor'];
+                    
+                    map.getStyle().layers.forEach(layer => {
+                        hiddenLayers.forEach(pattern => {
+                            if (layer.id.includes(pattern)) {
+                                map.setLayoutProperty(layer.id, 'visibility', 'none');
+                            }
+                        });
+                    });
+                });
+                
+                // Add markers to map
+                const markers = [];
+                savedDestinations.forEach((dest, index) => {
+                    // Create custom marker element (simple circle)
+                    const el = document.createElement('div');
+                    el.className = 'map-marker';
+                    el.style.setProperty('--index', index);
+                    el.setAttribute('data-id', dest.id);
+                    
+                    // Create marker label
+                    const label = document.createElement('div');
+                    label.className = 'map-marker-label';
+                    label.innerText = dest.name;
+                    el.appendChild(label);
+                    
+                    // Add marker to map with proper positioning
+                    const marker = new mapboxgl.Marker({
+                        element: el,
+                        anchor: 'center', // Center alignment
+                    })
+                    .setLngLat([dest.coordinates.lng, dest.coordinates.lat])
+                    .addTo(map);
+                    
+                    // Store the marker reference
+                    markers.push({
+                        id: dest.id,
+                        element: el,
+                        marker: marker
+                    });
+                    
+                    // Add click handler to the marker element
+                    el.addEventListener('click', (e) => {
+                        // Prevent event bubbling
+                        e.stopPropagation();
+                        
+                        // Highlight destination card
+                        highlightDestination(dest.id);
+                        
+                        // Fly to destination with smooth animation
+                        map.flyTo({
+                            center: [dest.coordinates.lng, dest.coordinates.lat],
+                            zoom: 8,
+                            duration: 1000,
+                            essential: true
+                        });
+                        
+                        // Scroll the corresponding card into view
+                        const card = document.querySelector(`.destination-card[data-id="${dest.id}"]`);
+                        if (card) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    });
+                });
+                
+                // Double-click to reset view
+                map.on('dblclick', (e) => {
+                    // Prevent default zoom behavior
+                    e.preventDefault();
+                    
+                    // Reset to default view
+                    map.flyTo({
+                        center: [12, 42],
+                        zoom: 5,
+                        pitch: 0,
+                        bearing: 0,
+                        duration: 1000
+                    });
+                });
+                
+                // Add user location marker
+                addUserLocation(map);
+                
+                // Enable map controls
+                addMapControls(map);
+            });
+            
+            // Initialize region filters
+            const filterButtons = document.querySelectorAll('.region-filter');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Get selected region
+                    const region = button.getAttribute('data-region');
+                    
+                    // Filter destination cards
+                    filterDestinations(region);
+                });
+            });
+            
+            // Add data-id attributes to destination cards for selection
+            const destinationCards = document.querySelectorAll('.destination-card');
+            destinationCards.forEach((card, index) => {
+                const dest = savedDestinations[index];
+                card.setAttribute('data-id', dest.id);
+                
+                card.addEventListener('click', () => {
+                    // Highlight destination card
+                    highlightDestination(dest.id);
+                    
+                    // Fly to destination on map with smoother animation
+                    map.flyTo({
+                        center: [dest.coordinates.lng, dest.coordinates.lat],
+                        zoom: 8,
+                        duration: 1000,
+                        essential: true
+                    });
+                });
+            });
+            
+            // Add click events to destination cards
+            document.querySelectorAll('.destination-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking a button inside the card
+                    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                        return;
+                    }
+                    
+                    const destId = this.getAttribute('data-id');
+                    if (!destId) return;
+                    
+                    const dest = savedDestinations.find(d => d.id === destId);
+                    if (!dest) return;
+                    
+                    // Highlight this destination
+                    highlightDestination(destId);
+                    
+                    // Fly to this location
+                    map.flyTo({
+                        center: [dest.coordinates.lng, dest.coordinates.lat],
+                        zoom: 8,
+                        duration: 1000,
+                        essential: true
+                    });
+                });
+                
+                // Add hover effects to show connection between cards and markers
+                card.addEventListener('mouseenter', function() {
+                    const destId = this.getAttribute('data-id');
+                    if (!destId) return;
+                    
+                    // Highlight marker without changing card status
+                    const marker = document.querySelector(`.map-marker[data-id="${destId}"]`);
+                    if (marker) {
+                        marker.classList.add('hover');
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    const destId = this.getAttribute('data-id');
+                    if (!destId) return;
+                    
+                    // Remove hover state if not active
+                    const marker = document.querySelector(`.map-marker[data-id="${destId}"]`);
+                    if (marker && !marker.classList.contains('active')) {
+                        marker.classList.remove('hover');
+                    }
+                });
+            });
+            
+            // Function to highlight destination card and marker
+            function highlightDestination(id) {
+                // Clear previous selections
+                document.querySelectorAll('.destination-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                document.querySelectorAll('.map-marker').forEach(marker => {
+                    marker.classList.remove('active');
+                });
+                
+                // Highlight selected card
+                const selectedCard = document.querySelector(`.destination-card[data-id="${id}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('active');
+                }
+                
+                // Highlight selected marker
+                const selectedMarker = document.querySelector(`.map-marker[data-id="${id}"]`);
+                if (selectedMarker) {
+                    selectedMarker.classList.add('active');
+                    
+                    // Make the label visible for the active marker
+                    const label = selectedMarker.querySelector('.map-marker-label');
+                    if (label) {
+                        label.style.opacity = '1';
+                        label.style.visibility = 'visible';
+                    }
+                }
+            }
+            
+            // Function to filter destinations by region
+            function filterDestinations(region) {
+                const cards = document.querySelectorAll('.destination-card');
+                const mapMarkers = document.querySelectorAll('.map-marker');
+                
+                // Clear any active selection
+                document.querySelectorAll('.destination-card.active, .map-marker.active').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // Show all destinations if 'all' is selected
+                if (region === 'all') {
+                    cards.forEach(card => {
+                        card.style.display = 'block';
+                    });
+                    
+                    mapMarkers.forEach(marker => {
+                        marker.style.display = 'flex';
+                    });
+                    
+                    // Reset map view
+                    map.flyTo({
+                        center: [12, 42],
+                        zoom: 5,
+                        duration: 1000
+                    });
+                    
+                    return;
+                }
+                
+                // Filter destinations by region
+                const filteredDestinations = [];
+                
+                // Process cards and collect filtered destinations
+                cards.forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const dest = savedDestinations.find(d => d.id === id);
+                    
+                    if (dest) {
+                        const show = dest.region.toLowerCase() === region.toLowerCase();
+                        card.style.display = show ? 'block' : 'none';
+                        
+                        if (show) {
+                            filteredDestinations.push(dest);
+                        }
+                    }
+                });
+                
+                // Process markers
+                mapMarkers.forEach(marker => {
+                    const id = marker.getAttribute('data-id');
+                    const dest = savedDestinations.find(d => d.id === id);
+                    
+                    if (dest) {
+                        const show = dest.region.toLowerCase() === region.toLowerCase();
+                        marker.style.display = show ? 'flex' : 'none';
+                    }
+                });
+                
+                // If there are filtered destinations, fit map to their bounds
+                if (filteredDestinations.length > 0) {
+                    // Create bounds object
+                    const bounds = new mapboxgl.LngLatBounds();
+                    
+                    // Extend bounds with each filtered destination
+                    filteredDestinations.forEach(dest => {
+                        bounds.extend([dest.coordinates.lng, dest.coordinates.lat]);
+                    });
+                    
+                    // Fit map to bounds with padding
+                    map.fitBounds(bounds, {
+                        padding: 80,
+                        duration: 1000
+                    });
+                }
+            }
+            
+            // Add user location marker to map
+            function addUserLocation(map) {
+                // Check if geolocation is available
+                if (!navigator.geolocation) {
+                    console.log('Geolocation is not supported by your browser');
+                    return;
+                }
+                
+                // Try to get user location
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        
+                        // Create user location dot elements
+                        const userLocContainer = document.createElement('div');
+                        userLocContainer.className = 'user-location-marker';
+                        
+                        const dot = document.createElement('div');
+                        dot.className = 'user-location-dot';
+                        
+                        const pulse = document.createElement('div');
+                        pulse.className = 'user-location-pulse';
+                        
+                        userLocContainer.appendChild(dot);
+                        userLocContainer.appendChild(pulse);
+                        
+                        // Add tooltip
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'user-location-tooltip';
+                        tooltip.textContent = 'You are here';
+                        userLocContainer.appendChild(tooltip);
+                        
+                        // Add to map
+                        new mapboxgl.Marker(userLocContainer)
+                            .setLngLat([longitude, latitude])
+                            .addTo(map);
+                        
+                        // Store user location in global variable
+                        window.userLocation = {
+                            latitude,
+                            longitude
+                        };
+                        
+                        // Calculate and update distances
+                        updateDistances(latitude, longitude);
+                        
+                        // Enable Near Me filter
+                        enableNearMeFilter();
+                        
+                        console.log('User location detected and added to map');
+                    },
+                    error => {
+                        console.log('Could not get user location:', error.message);
+                        showLocationPermissionRequest();
+                    }
+                );
+            }
+            
+            // Calculate and update distances between user and destinations
+            function updateDistances(userLat, userLng) {
+                savedDestinations.forEach(dest => {
+                    // Calculate distance using Haversine formula
+                    const distance = calculateDistance(
+                        userLat, 
+                        userLng, 
+                        dest.coordinates.lat, 
+                        dest.coordinates.lng
+                    );
+                    
+                    // Store distance in the destination object
+                    dest.distanceFromUser = distance;
+                    
+                    // Update the UI for each card
+                    const card = document.querySelector(`.destination-card[data-id="${dest.id}"]`);
+                    if (card) {
+                        const distanceEl = card.querySelector('.distance');
+                        if (distanceEl) {
+                            // Format distance: if < 100 miles, show 1 decimal place, otherwise round to nearest mile
+                            const formattedDistance = distance < 100 ? 
+                                distance.toFixed(1) : 
+                                Math.round(distance);
+                                
+                            distanceEl.textContent = `${formattedDistance} miles away`;
+                        }
+                        
+                        // Update flight time estimation (rough approximation: 500mph average speed)
+                        const travelTimeEl = card.querySelector('.travel-time');
+                        if (travelTimeEl) {
+                            const flightHours = distance / 500; // Rough estimation
+                            const hours = Math.floor(flightHours);
+                            const minutes = Math.round((flightHours - hours) * 60);
+                            travelTimeEl.textContent = `${hours}h ${minutes}m flight`;
+                        }
+                    }
+                });
+            }
+            
+            // Calculate distance between two points using Haversine formula
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 3958.8; // Earth's radius in miles
+                const dLat = toRad(lat2 - lat1);
+                const dLon = toRad(lon2 - lon1);
+                
+                const a = 
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * 
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                const distance = R * c;
+                
+                return distance;
+            }
+            
+            // Convert degrees to radians
+            function toRad(degrees) {
+                return degrees * (Math.PI / 180);
+            }
+            
+            // Show location permission request
+            function showLocationPermissionRequest() {
+                // Check if we've already asked
+                const hasAskedForLocation = localStorage.getItem('hasAskedForLocation');
+                
+                if (hasAskedForLocation) {
+                    return; // Don't ask again
+                }
+                
+                // Create modal element
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '9999';
+                
+                // Create modal content
+                const content = document.createElement('div');
+                content.style.backgroundColor = 'white';
+                content.style.borderRadius = '12px';
+                content.style.padding = '24px';
+                content.style.maxWidth = '400px';
+                content.style.textAlign = 'center';
+                
+                content.innerHTML = `
+                    <h3 style="margin-top: 0;">Enable Location Services</h3>
+                    <p>Allow access to your location to see destinations near you and get personalized travel time estimates.</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
+                        <button id="deny-location" style="background-color: #f3f3f3; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Not Now</button>
+                        <button id="allow-location" style="background-color: #0080FF; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Allow Access</button>
+                    </div>
+                `;
+                
+                modal.appendChild(content);
+                document.body.appendChild(modal);
+                
+                // Add event listeners
+                document.getElementById('allow-location').addEventListener('click', () => {
+                    modal.remove();
+                    localStorage.setItem('hasAskedForLocation', 'true');
+                    addUserLocation(map);
+                });
+                
+                document.getElementById('deny-location').addEventListener('click', () => {
+                    modal.remove();
+                    localStorage.setItem('hasAskedForLocation', 'true');
+                });
+            }
+            
+            // Enable Near Me filter functionality
+            function enableNearMeFilter() {
+                const nearMeFilter = document.querySelector('.near-me-filter');
+                if (nearMeFilter) {
+                    nearMeFilter.disabled = false;
+                    nearMeFilter.style.opacity = '1';
+                    nearMeFilter.style.cursor = 'pointer';
+                }
+            }
+            
+            // Add map controls
+            function addMapControls(map) {
+                // No need to add additional controls here since we already added them
+                // when initializing the map
+            }
+            
+            // Handle map layer selection
+            document.querySelectorAll('.map-layer-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    // Get style name
+                    const style = option.getAttribute('data-style');
+                    
+                    // Change map style
+                    switch (style) {
+                        case 'light':
+                            map.setStyle('mapbox://styles/mapbox/light-v10');
+                            break;
+                        case 'satellite':
+                            map.setStyle('mapbox://styles/mapbox/satellite-streets-v12');
+                            break;
+                        case 'outdoors':
+                            map.setStyle('mapbox://styles/mapbox/outdoors-v12');
+                            break;
+                        case 'dark':
+                            map.setStyle('mapbox://styles/mapbox/dark-v10');
+                            break;
+                    }
+                    
+                    // Update active state
+                    document.querySelectorAll('.map-layer-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    option.classList.add('active');
+                    
+                    // Re-add markers after style loads to preserve them
+                    map.once('style.load', function() {
+                        // Re-add the markers
+                        markers.forEach(markerObj => {
+                            markerObj.marker.addTo(map);
+                        });
+                        
+                        // Re-add user location marker
+                        if (window.userLocation) {
+                            addUserLocation(map);
+                        }
+                    });
+                });
+            });
+            
+            // Handle Center on Me button
+            document.getElementById('center-on-me').addEventListener('click', () => {
+                if (window.userLocation) {
+                    const { latitude, longitude } = window.userLocation;
+                    
+                    map.flyTo({
+                        center: [longitude, latitude],
+                        zoom: 10,
+                        duration: 1000,
+                        essential: true
+                    });
+                } else {
+                    // Ask for location
+                    addUserLocation(map);
+                }
+            });
+            
+            // Handle screenshot button
+            document.getElementById('screenshot-map').addEventListener('click', () => {
+                // Get map canvas
+                const canvas = map.getCanvas();
+                
+                // Create link to download image
+                const link = document.createElement('a');
+                link.download = 'saved-destinations-map.png';
+                link.href = canvas.toDataURL();
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            // Update local time for selected destination
+            function updateLocalTime(destinationId) {
+                // Function is now empty as we're removing the time display
+            }
+        });
+    </script>
+</body>
+</html> 

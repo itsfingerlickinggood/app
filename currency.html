@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter - Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo">
+            <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                <li><a href="tools.html" class="active"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <button class="theme-toggle">
+                <input type="checkbox" class="theme-switch" id="theme-switch">
+                <label for="theme-switch" class="switch-label"></label>
+                <i class="fas fa-moon toggle-icon"></i>
+                <i class="fas fa-sun toggle-icon-sun"></i>
+            </button>
+            <div class="user-profile">
+                <a href="profile.html">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                    <span>Emma</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-container single-panel">
+        <section class="content-section">
+            <div class="tools-submenu">
+                <a href="currency.html" class="submenu-item active">Currency Converter</a>
+                <a href="checklist.html" class="submenu-item">Packing Checklist</a>
+            </div>
+            
+            <div class="currency-converter">
+                <h2>Currency Converter</h2>
+                <div class="converter-form">
+                    <div class="amount-input">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" value="100">
+                    </div>
+                    <div class="currency-selects">
+                        <div class="from-currency">
+                            <label for="from-currency">From</label>
+                            <select id="from-currency">
+                                <option value="USD" selected>USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                            </select>
+                        </div>
+                        <button class="swap-btn">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <div class="to-currency">
+                            <label for="to-currency">To</label>
+                            <select id="to-currency">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR" selected>EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="conversion-result">
+                        <h3>Result</h3>
+                        <div class="result-amount">92.41 EUR</div>
+                        <div class="conversion-rate">1 USD = 0.9241 EUR</div>
+                    </div>
+                </div>
+                <div class="recent-conversions">
+                    <h3>Recent Conversions</h3>
+                    <ul class="conversion-history">
+                        <!-- Recent conversions will be added here by JS -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <button class="close-menu-btn">×</button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>Emma</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html" class="active"><i class="fas fa-tools"></i> Tools</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/currency.js"></script>
+    <script type="module">
+        import { initCurrencyConverter } from './js/currency.js';
+        
+        // Initialize the theme
+        function initTheme() {
+            const themeSwitch = document.getElementById('theme-switch');
+            if (themeSwitch) {
+                // Always start with light mode
+                const isDarkMode = false;
+                themeSwitch.checked = isDarkMode;
+                
+                // Apply initial theme
+                setTheme(isDarkMode);
+                
+                // Theme toggle
+                themeSwitch.addEventListener('change', () => {
+                    // Keep in light mode regardless of toggle
+                    setTheme(false);
+                });
+            }
+        }
+        
+        function setTheme(isDark) {
+            // Always use light theme
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        
+        // Initialize mobile menu
+        function initMobileMenu() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const closeMenuButton = document.querySelector('.close-menu-btn');
+            
+            if (mobileMenuToggle && mobileMenuOverlay && closeMenuButton) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.toggle('active');
+                    document.body.style.overflow = mobileMenuOverlay.classList.contains('active') ? 'hidden' : '';
+                });
+                
+                closeMenuButton.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                mobileMenuOverlay.addEventListener('click', (e) => {
+                    if (e.target === mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        }
+        
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initCurrencyConverter();
+            initTheme();
+            initMobileMenu();
+        });
+    </script>
+</body>
+</html> 

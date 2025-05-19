@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <!-- Mapbox Search JS -->
+    <script src="https://api.mapbox.com/search-js/v1.0.0-beta.17/web.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom styles for Mapbox Search Box */
+        mapbox-search-box {
+            width: 100%;
+            --mb-input-background: var(--bg-primary);
+            --mb-input-text-color: var(--text-primary);
+            --mb-input-border-color: var(--gray-200);
+            --mb-input-border-width: var(--border-thin);
+            --mb-input-border-radius: var(--radius-lg);
+            --mb-input-border-color-focus: var(--primary);
+            --mb-input-border-width-focus: var(--border-medium);
+            --mb-suggestions-background: var(--bg-primary);
+            --mb-suggestions-foreground: var(--text-primary);
+            --mb-suggestions-border-radius: var(--radius-md);
+            --mb-suggestions-border-color: var(--gray-200);
+            --mb-suggestions-hover-background: var(--bg-secondary);
+            --mb-suggestions-hover-foreground: var(--text-primary);
+            --mb-suggestions-focus-background: var(--bg-secondary);
+            --mb-suggestions-focus-foreground: var(--text-primary);
+            --mb-suggestions-highlighted-color: var(--primary);
+            --mb-footer-background: var(--bg-primary);
+            --mb-footer-link-color: var(--primary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            padding: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        mapbox-search-box:focus-within {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .custom-mapbox-search {
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Discovering amazing destinations...</p>
+        <button id="force-close-loading" style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.5); color: white; padding: 10px; border-radius: 5px; border: none; cursor: pointer;">Force Close</button>
+    </div>
+
+    <!-- Ultra-aggressive fix to hide loading screen - runs immediately -->
+    <script>
+        // This script runs immediately without waiting for any event
+        (function() {
+            console.log('Emergency loading screen fix executing...');
+            // Hide loading screen after a very short delay
+            setTimeout(function() {
+                var overlay = document.querySelector('.loading-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(function() {
+                        overlay.style.display = 'none';
+                        console.log('Loading overlay hidden by emergency script');
+                    }, 300);
+                }
+            }, 1000);
+        })();
+    </script>
+
+    <!-- Style tag to force hide the loading overlay after 3 seconds as absolute last resort -->
+    <style>
+        /* This style will hide the loading overlay after 3 seconds no matter what */
+        .loading-overlay {
+            animation: forceHideOverlay 3s forwards;
+        }
+        @keyframes forceHideOverlay {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            99% { opacity: 0; display: flex; }
+            100% { opacity: 0; display: none; }
+        }
+    </style>
+
+    <!-- Immediate fix for loading screen -->
+    <script>
+        // This script runs immediately and doesn't wait for modules to load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Very aggressive approach to hide loading screen
+            setTimeout(() => {
+                const overlay = document.querySelector('.loading-overlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                    console.log('Loading overlay hidden by immediate script');
+                }
+            }, 800); // Short timeout to allow initial rendering
+            
+            // Also attach event to force close button
+            const forceCloseBtn = document.getElementById('force-close-loading');
+            if (forceCloseBtn) {
+                forceCloseBtn.addEventListener('click', () => {
+                    const overlay = document.querySelector('.loading-overlay');
+                    if (overlay) {
+                        overlay.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Header -->
+    <header class="app-header">
+            <div class="logo">
+            <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+            </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html" class="active"><i class="fas fa-compass"></i> Discover</a></li>
+                <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+                </ul>
+            </nav>
+        <div class="user-section">
+            <button class="theme-toggle">
+                <input type="checkbox" class="theme-switch" id="theme-switch">
+                <label for="theme-switch" class="switch-label"></label>
+                <i class="fas fa-moon toggle-icon"></i>
+                <i class="fas fa-sun toggle-icon-sun"></i>
+                </button>
+            <div class="user-profile">
+                <a href="profile.html">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                    <span>Emma</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container - Two-panel layout -->
+    <main class="app-container">
+        <!-- Left Panel - Content side -->
+        <section class="left-panel">
+            <!-- Search Box -->
+            <div class="section">
+                <h2 class="section-title">Find Your Perfect Destination</h2>
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                    <mapbox-search-box
+                            id="search-input"
+                        access-token="pk.eyJ1IjoieC0wMDciLCJhIjoiY21hc2M2YzlyMGswejJrc2ZkcmxrczdhcCJ9.WDicPdPwfpF6W0NwUXRL8w"
+                        placeholder="Where would you like to go?"
+                        class="custom-mapbox-search">
+                        </mapbox-search-box>
+                    </div>
+                </div>
+
+                <!-- Quick Filters -->
+                <div class="quick-filters">
+                    <button class="quick-filter-btn" data-filter="gas_station">
+                        <i class="fas fa-gas-pump"></i>
+                        <span>Gas</span>
+                    </button>
+                    <button class="quick-filter-btn" data-filter="parking">
+                        <i class="fas fa-parking"></i>
+                        <span>Parking</span>
+                    </button>
+                    <button class="quick-filter-btn" data-filter="restaurant">
+                        <i class="fas fa-utensils"></i>
+                        <span>Food</span>
+                    </button>
+                    <button class="quick-filter-btn" data-filter="cafe">
+                        <i class="fas fa-coffee"></i>
+                        <span>Cafe</span>
+                    </button>
+                    <button class="quick-filter-btn" data-filter="lodging">
+                        <i class="fas fa-hotel"></i>
+                        <span>Hotels</span>
+                    </button>
+                                </div>
+                            </div>
+                            
+            <!-- Quick Links to separate pages -->
+            <div class="section">
+                <h2 class="section-title">Quick Access</h2>
+                <div class="quick-links">
+                    <a href="map.html" class="quick-link">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <span>Full Map</span>
+                    </a>
+                    <a href="checklist.html" class="quick-link">
+                        <i class="fas fa-tasks"></i>
+                        <span>Packing List</span>
+                    </a>
+                    <a href="currency.html" class="quick-link">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Currency</span>
+                    </a>
+                                </div>
+                            </div>
+                            
+            <!-- Category Section -->
+            <div class="section">
+                <h2 class="section-title">Explore by Category</h2>
+                <!-- Category Pills -->
+                <div class="category-pills">
+                    <button class="pill active" data-category="all">
+                        <i class="fas fa-globe"></i>All
+                                </button>
+                    <button class="pill" data-category="trending">
+                        <i class="fas fa-fire"></i>Trending
+                                </button>
+                    <button class="pill" data-category="nearby">
+                        <i class="fas fa-location-arrow"></i>Nearby
+                    </button>
+                    <button class="pill" data-category="saved">
+                        <i class="fas fa-bookmark"></i>Saved
+                    </button>
+                    <button class="pill" data-category="visited">
+                        <i class="fas fa-check-circle"></i>Visited
+                    </button>
+                </div>
+            </div>
+            
+            <!-- View Toggles (only shows on mobile) -->
+            <div class="view-toggles mobile-only">
+                <button class="btn btn-primary active" data-view="list">
+                    <i class="fas fa-list"></i> List View
+            </button>
+                <button class="btn btn-secondary" data-view="map">
+                    <i class="fas fa-map-marker-alt"></i> Map View
+                </button>
+            </div>
+            
+            <!-- Content Section -->
+            <div class="section">
+                <h2 class="section-title">Popular Destinations</h2>
+                <div class="content-tabs">
+                    <div class="tab active">Featured</div>
+                    <div class="tab">Popular</div>
+                    <div class="tab">New</div>
+            </div>
+            
+                <!-- Destination Recommendation Cards -->
+                <div class="destinations-grid grid" id="destination-list">
+                    <!-- Example destination cards -->
+                    <div class="destination-card">
+                        <span class="badge featured">Featured</span>
+                        <button class="favorite-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Bali" class="card-img">
+                        <div class="card-content">
+                            <h3>Bali, Indonesia</h3>
+                            <p>Discover the perfect blend of pristine beaches, rich culture, and lush landscapes.</p>
+                            <div class="card-footer">
+                                <div class="star-rating">
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star-half-alt star filled"></i>
+                                    <span>4.5</span>
+                            </div>
+                                <a href="#" class="card-action">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="destination-card">
+                        <span class="badge trending">Trending</span>
+                        <button class="favorite-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Venice" class="card-img">
+                        <div class="card-content">
+                            <h3>Venice, Italy</h3>
+                            <p>Explore the romantic canals and historic architecture of this unique floating city.</p>
+                            <div class="card-footer">
+                                <div class="star-rating">
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="far fa-star star"></i>
+                                    <span>4.0</span>
+                </div>
+                                <a href="#" class="card-action">View Details</a>
+                            </div>
+                        </div>
+                        </div>
+                        
+                    <div class="destination-card">
+                        <span class="badge new">New</span>
+                        <button class="favorite-btn active">
+                            <i class="fas fa-heart"></i>
+                            </button>
+                        <img src="https://images.unsplash.com/photo-1535139262971-c51845709a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Santorini" class="card-img">
+                        <div class="card-content">
+                            <h3>Santorini, Greece</h3>
+                            <p>Experience breathtaking sunsets over white-washed buildings and the crystal blue Aegean Sea.</p>
+                            <div class="card-footer">
+                                <div class="star-rating">
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <span>5.0</span>
+                                </div>
+                                <a href="#" class="card-action">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                
+                    <div class="destination-card">
+                        <button class="favorite-btn">
+                            <i class="far fa-heart"></i>
+                                </button>
+                        <img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Switzerland" class="card-img">
+                        <div class="card-content">
+                            <h3>Swiss Alps, Switzerland</h3>
+                            <p>Embrace adventure in the majestic mountains with skiing, hiking, and breathtaking scenery.</p>
+                            <div class="card-footer">
+                                <div class="star-rating">
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star star filled"></i>
+                                    <i class="fas fa-star-half-alt star filled"></i>
+                                    <span>4.7</span>
+                                </div>
+                                <a href="#" class="card-action">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel - Map side -->
+        <section class="right-panel">
+            <div id="map-container">
+                <div id="map"></div>
+                
+                <!-- Map Controls -->
+                <div class="map-controls">
+                    <div class="map-style-toggles">
+                        <button id="outdoors-style" class="map-style-toggle active">
+                            <i class="fas fa-mountain"></i> Outdoors
+                        </button>
+                        <button id="satellite-style" class="map-style-toggle">
+                            <i class="fas fa-globe-americas"></i> Satellite
+                        </button>
+                    </div>
+                    <div class="map-zoom-controls">
+                        <button class="zoom-control" id="zoom-in">+</button>
+                        <button class="zoom-control" id="zoom-out">−</button>
+            </div>
+        </div>
+    </div>
+        </section>
+
+        <!-- Mobile Map Toggle Button -->
+        <button class="map-fab">
+            <i class="fas fa-map-marked-alt"></i>
+        </button>
+    </main>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <button class="close-menu-btn">×</button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>itsfingerlickinggoodmust</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="index.html" class="active"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+                </div>
+            </div>
+
+    <!-- Destination Detail Modal -->
+    <div class="modal detail-modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="modal-body">
+                <!-- Will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const themeSwitch = document.getElementById('theme-switch');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeSwitch.checked = true;
+            }
+        });
+        
+        // Preload images to improve initial loading experience
+        function preloadImages() {
+            // Common destinations to preload
+            const imagesToPreload = [
+                "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop", // Paris
+                "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&h=400&fit=crop", // Bali
+                "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop"  // Tokyo
+            ];
+            
+            // Preload images in background
+            imagesToPreload.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+        
+        // Start preloading images
+        preloadImages();
+    </script>
+    <!-- Main application script -->
+    <script type="module" src="js/index.js"></script>
+    <!-- Fix for map style initialization -->
+    <script type="module">
+        // Wait for map and buttons to be available
+        document.addEventListener('DOMContentLoaded', () => {
+            // Force outdoors style once map is initialized
+            const ensureOutdoorsStyle = setInterval(() => {
+                const mapInstance = window.map;
+                if (mapInstance && mapInstance.loaded && mapInstance.loaded()) {
+                    mapInstance.setStyle('mapbox://styles/mapbox/outdoors-v12');
+                    
+                    // Make sure outdoors button is active
+                    const outdoorsBtn = document.getElementById('outdoors-style');
+                    const satelliteBtn = document.getElementById('satellite-style');
+                    
+                    if (outdoorsBtn) {
+                        outdoorsBtn.classList.add('active');
+                        
+                        // Explicitly attach event listeners again
+                        outdoorsBtn.addEventListener('click', () => {
+                            mapInstance.setStyle('mapbox://styles/mapbox/outdoors-v12');
+                            outdoorsBtn.classList.add('active');
+                            if (satelliteBtn) satelliteBtn.classList.remove('active');
+                        });
+                    }
+                    
+                    if (satelliteBtn) {
+                        satelliteBtn.classList.remove('active');
+                        
+                        // Explicitly attach event listeners again
+                        satelliteBtn.addEventListener('click', () => {
+                            mapInstance.setStyle('mapbox://styles/mapbox/satellite-streets-v12');
+                            satelliteBtn.classList.add('active');
+                            if (outdoorsBtn) outdoorsBtn.classList.remove('active');
+                        });
+                    }
+                    
+                    // Stop checking once fixed
+                    clearInterval(ensureOutdoorsStyle);
+                    console.log('Map style properly initialized to outdoors');
+                }
+            }, 500);
+            
+            // Safety timeout to clear interval if map never loads
+            setTimeout(() => {
+                clearInterval(ensureOutdoorsStyle);
+            }, 10000);
+        });
+    </script>
+    
+    <!-- Mapbox Search Setup -->
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Mapbox Search
+            const searchBox = document.querySelector('mapbox-search-box');
+            
+            if (searchBox && window.map) {
+                // Connect search box to map
+                searchBox.bindMap(window.map);
+                
+                // Configure search box settings
+                searchBox.options = {
+                    language: 'en',
+                    country: 'US',
+                    limit: 5,
+                    types: 'poi,address,place'
+                };
+                
+                // Quick filter button functionality
+                const quickFilterBtns = document.querySelectorAll('.quick-filter-btn');
+                quickFilterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filterValue = btn.getAttribute('data-filter');
+                        
+                        // Since we're already using the category ID directly in data-filter
+                        // We can use the value directly
+                        const searchCategory = filterValue;
+                        
+                        if (searchCategory && window.map) {
+                            // Get current map center
+                            const center = window.map.getCenter();
+                            
+                            // Generate a session token
+                            const sessionToken = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+                            
+                            // Perform category search
+                            fetch(`https://api.mapbox.com/search/searchbox/v1/category/${searchCategory}?access_token=${searchBox.accessToken}&proximity=${center.lng},${center.lat}&limit=10&session_token=${sessionToken}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.features && data.features.length > 0) {
+                                        // Clear existing markers
+                                        if (window.clearMarkers) {
+                                            window.clearMarkers();
+                                        }
+                                        
+                                        // Add results to map
+                                        data.features.forEach(feature => {
+                                            if (window.addCustomMarker) {
+                                                window.addCustomMarker(feature);
+                                            }
+                                        });
+                                        
+                                        // Fit map to show all results
+                                        const bounds = new mapboxgl.LngLatBounds();
+                                        data.features.forEach(feature => {
+                                            bounds.extend(feature.geometry.coordinates);
+                                        });
+                                        window.map.fitBounds(bounds, { padding: 50 });
+                                    }
+                                })
+                                .catch(error => console.error('Error searching category:', error));
+                        }
+                    });
+                });
+                
+                // Handle search box events
+                searchBox.addEventListener('retrieve', (event) => {
+                    const feature = event.detail;
+                    
+                    // If the feature has valid coordinates, fly to them
+                    if (feature && feature.features && feature.features.length > 0) {
+                        const selectedFeature = feature.features[0];
+                        const coords = selectedFeature.geometry.coordinates;
+                        
+                        window.map.flyTo({
+                            center: coords,
+                            zoom: 15,
+                            essential: true
+                        });
+                        
+                        // Add custom marker for the selected location if needed
+                        if (window.addCustomMarker) {
+                            window.addCustomMarker(selectedFeature);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination Map - Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <!-- Mapbox Search JS -->
+    <script src="https://api.mapbox.com/search-js/v1.0.0-beta.17/web.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .map-page main {
+            height: calc(100vh - 70px);
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        .map-sidebar.collapsed {
+            transform: translateX(-290px);
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            width: 30px;
+            height: 50px;
+            background: white;
+            border-radius: 0 4px 4px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 11;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .region-filters {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .region-filters h3 {
+            margin-top: 0;
+            color: #E31837;
+        }
+        
+        .region-filter {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        
+        .region-emoji {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        
+        .destination-list {
+            padding: 15px;
+        }
+        
+        .destination-list h3 {
+            margin-top: 0;
+            color: #E31837;
+        }
+        
+        .map-destination-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .map-destination-item:hover {
+            background: #f9f9f9;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-destination-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+        
+        .map-destination-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+        
+        .map-destination-info p {
+            margin: 0;
+            font-size: 13px;
+            color: #777;
+        }
+        
+        @media (max-width: 768px) {
+            .map-sidebar {
+                width: 260px;
+            }
+            
+            .map-sidebar.collapsed {
+                transform: translateX(-250px);
+            }
+        }
+    </style>
+</head>
+<body class="map-page">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo">
+            <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                <li><a href="map.html" class="active"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <button class="theme-toggle">
+                <input type="checkbox" class="theme-switch" id="theme-switch">
+                <label for="theme-switch" class="switch-label"></label>
+                <i class="fas fa-moon toggle-icon"></i>
+                <i class="fas fa-sun toggle-icon-sun"></i>
+            </button>
+            <div class="user-profile">
+                <a href="profile.html">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                    <span>Emma</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+        <div class="map-container">
+            <div class="map-sidebar">
+                <div class="sidebar-toggle">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                
+                <div class="region-filters">
+                    <h3>Filter by Region</h3>
+                    <div class="region-filter" data-region="all">
+                        <span class="region-emoji">🌍</span>
+                        <span class="region-name">All Regions</span>
+                    </div>
+                    <!-- Other regions will be added dynamically -->
+                </div>
+                
+                <div class="destination-list">
+                    <h3>Destinations</h3>
+                    <!-- Destination items will be added dynamically -->
+                </div>
+            </div>
+            
+            <div id="map"></div>
+            
+            <div class="map-overlay">
+                <div class="map-controls">
+                    <div class="map-style-toggles">
+                        <button id="outdoors-style" class="active">🏞️ Outdoors</button>
+                        <button id="satellite-style">🌍 Satellite</button>
+                    </div>
+                    <div class="map-zoom-controls">
+                        <button class="zoom-control" id="zoom-in">+</button>
+                        <button class="zoom-control" id="zoom-out">-</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <button class="close-menu-btn">×</button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>Emma</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html" class="active"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Destination Detail Modal -->
+    <div class="modal detail-modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="modal-body">
+                <!-- Will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/mapbox.js"></script>
+    <script type="module" src="js/regionFilters.js"></script>
+    <script type="module" src="js/modals.js"></script>
+    <script type="module">
+        import { destinations, regions } from './js/data.js';
+        import { initMapbox, map, filterMarkersByRegion, flyToDestination } from './js/mapbox.js';
+        import { showDestinationModal } from './js/modals.js';
+        
+        // Current state
+        let currentRegion = null;
+        
+        // Initialize the theme
+        function initTheme() {
+            const themeSwitch = document.getElementById('theme-switch');
+            if (themeSwitch) {
+                // Always start with light mode
+                const isDarkMode = false;
+                themeSwitch.checked = isDarkMode;
+                
+                // Apply initial theme
+                setTheme(isDarkMode);
+                
+                // Theme toggle
+                themeSwitch.addEventListener('change', () => {
+                    // Keep in light mode regardless of toggle
+                    setTheme(false);
+                });
+            }
+        }
+        
+        function setTheme(isDark) {
+            // Always use light theme
+            document.documentElement.setAttribute('data-theme', 'light');
+            
+            // Update map style if map exists - always use outdoors/light style
+            if (map && map.loaded()) {
+                map.setStyle('mapbox://styles/mapbox/outdoors-v12');
+            }
+        }
+        
+        // Initialize map sidebar
+        function initMapSidebar() {
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const mapSidebar = document.querySelector('.map-sidebar');
+            
+            if (sidebarToggle && mapSidebar) {
+                sidebarToggle.addEventListener('click', () => {
+                    mapSidebar.classList.toggle('collapsed');
+                    
+                    // Update toggle icon
+                    const icon = sidebarToggle.querySelector('i');
+                    if (mapSidebar.classList.contains('collapsed')) {
+                        icon.classList.remove('fa-chevron-left');
+                        icon.classList.add('fa-chevron-right');
+                    } else {
+                        icon.classList.remove('fa-chevron-right');
+                        icon.classList.add('fa-chevron-left');
+                    }
+                    
+                    // Resize map to fit container after sidebar toggle
+                    if (map) {
+                        setTimeout(() => {
+                            map.resize();
+                        }, 300);
+                    }
+                });
+            }
+        }
+        
+        // Populate region filters
+        function populateRegionFilters() {
+            const regionFiltersContainer = document.querySelector('.region-filters');
+            
+            if (regionFiltersContainer && regions && regions.length) {
+                // All regions filter is already added
+                
+                // Add filters for each region
+                regions.forEach(region => {
+                    const regionFilter = document.createElement('div');
+                    regionFilter.className = 'region-filter';
+                    regionFilter.dataset.region = region.id;
+                    
+                    regionFilter.innerHTML = `
+                        <span class="region-emoji">${region.emoji}</span>
+                        <span class="region-name">${region.name}</span>
+                    `;
+                    
+                    regionFilter.addEventListener('click', () => {
+                        filterByRegion(region.id);
+                        
+                        // Update active state
+                        document.querySelectorAll('.region-filter').forEach(el => {
+                            el.classList.remove('active');
+                        });
+                        regionFilter.classList.add('active');
+                    });
+                    
+                    regionFiltersContainer.appendChild(regionFilter);
+                });
+                
+                // Set up 'All Regions' filter event
+                const allRegionsFilter = regionFiltersContainer.querySelector('[data-region="all"]');
+                if (allRegionsFilter) {
+                    allRegionsFilter.addEventListener('click', () => {
+                        filterByRegion(null);
+                        
+                        // Update active state
+                        document.querySelectorAll('.region-filter').forEach(el => {
+                            el.classList.remove('active');
+                        });
+                        allRegionsFilter.classList.add('active');
+                    });
+                    
+                    // Set as active by default
+                    allRegionsFilter.classList.add('active');
+                }
+            }
+        }
+        
+        // Populate destination list
+        function populateDestinationList(filteredDestinations = null) {
+            const destinationListContainer = document.querySelector('.destination-list');
+            
+            if (destinationListContainer) {
+                // Clear existing items except the heading
+                const heading = destinationListContainer.querySelector('h3');
+                destinationListContainer.innerHTML = '';
+                destinationListContainer.appendChild(heading);
+                
+                // Get destinations to display (filtered or all)
+                const destinationsToShow = filteredDestinations || destinations;
+                
+                // Add destinations
+                destinationsToShow.forEach(dest => {
+                    const destinationItem = document.createElement('div');
+                    destinationItem.className = 'map-destination-item';
+                    destinationItem.dataset.id = dest.id;
+                    
+                    destinationItem.innerHTML = `
+                        <img src="${dest.image}" alt="${dest.name}">
+                        <div class="map-destination-info">
+                            <h4>${dest.name}</h4>
+                            <p>${dest.country}</p>
+                        </div>
+                    `;
+                    
+                    destinationItem.addEventListener('click', () => {
+                        // Fly to the destination on the map
+                        flyToDestination(dest.id);
+                        
+                        // Show destination details
+                        showDestinationModal(dest);
+                    });
+                    
+                    destinationListContainer.appendChild(destinationItem);
+                });
+            }
+        }
+        
+        // Filter destinations by region
+        function filterByRegion(region) {
+            currentRegion = region;
+            
+            let filteredDestinations;
+            
+            if (region) {
+                // Filter destinations by selected region
+                filteredDestinations = destinations.filter(dest => dest.region === region);
+            } else {
+                // Show all destinations
+                filteredDestinations = destinations;
+            }
+            
+            // Update destination list
+            populateDestinationList(filteredDestinations);
+            
+            // Update map markers
+            filterMarkersByRegion(region);
+        }
+        
+        // Initialize mobile menu
+        function initMobileMenu() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const closeMenuButton = document.querySelector('.close-menu-btn');
+            
+            if (mobileMenuToggle && mobileMenuOverlay && closeMenuButton) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.toggle('active');
+                    document.body.style.overflow = mobileMenuOverlay.classList.contains('active') ? 'hidden' : '';
+                });
+                
+                closeMenuButton.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                mobileMenuOverlay.addEventListener('click', (e) => {
+                    if (e.target === mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        }
+        
+        // Initialize map styles
+        function initMapStyles() {
+            const outdoorsBtn = document.getElementById('outdoors-style');
+            const satelliteBtn = document.getElementById('satellite-style');
+            
+            if (outdoorsBtn && satelliteBtn && map) {
+                outdoorsBtn.addEventListener('click', () => {
+                    map.setStyle('mapbox://styles/mapbox/outdoors-v12');
+                    outdoorsBtn.classList.add('active');
+                    satelliteBtn.classList.remove('active');
+                });
+                
+                satelliteBtn.addEventListener('click', () => {
+                    map.setStyle('mapbox://styles/mapbox/satellite-streets-v12');
+                    satelliteBtn.classList.add('active');
+                    outdoorsBtn.classList.remove('active');
+                });
+                
+                // Set outdoors as active by default
+                outdoorsBtn.classList.add('active');
+                satelliteBtn.classList.remove('active');
+            }
+        }
+        
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize map
+            initMapbox(destinations, () => {
+                // These functions rely on the map being initialized
+                initMapStyles();
+            });
+            
+            // Initialize UI components
+            initTheme();
+            initMobileMenu();
+            initMapSidebar();
+            
+            // Populate data
+            populateRegionFilters();
+            populateDestinationList();
+        });
+    </script>
+</body>
+</html> 

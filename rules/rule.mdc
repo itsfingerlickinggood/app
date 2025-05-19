@@ -1,0 +1,61 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+```
+Feature Implementation Guide
+
+Your submission should excel in both functionality and aesthetics. Follow these principles and avoid common pitfalls:
+
+---
+
+### What Makes a Good Implementation?
+1. **Intuitive Navigation & Flow**  
+   - Clear, logical user journeys.  
+   - Consistent menu placement and calls-to-action.
+2. **Attractive & Consistent Visual Design**  
+   - Uniform color palette and typography.  
+   - Balanced spacing and alignment across components.
+3. **Fully Functional Features**  
+   - All buttons, filters, and interactions work as intended.  
+   - Map interactions, search, ratings, and modals are live.
+4. **Clean, Efficient, Organized Code**  
+   - Modular components and well-named variables.  
+   - DRY (Don’t Repeat Yourself) patterns and comments for clarity.
+
+---
+
+### Common Errors to Avoid
+- **Inconsistent Styling:** Visual mismatches across cards, buttons, and modals.
+- **Missing Interactivity:** Dead buttons, non-functional search or map markers.
+- **Incomplete Sections:** Omitted packing checklist, currency converter, or details modal.
+- **Poor Responsiveness:** Layout breaks on tablet/mobile, overlapping elements.
+- **Navigation Confusion:** Unclear toggles between grid and map views.
+
+---
+
+### Technical Requirements
+- **Functional Web App:** Your project must run in a browser without errors.
+- **Front‑End Only Is Acceptable:** Use mock data; back-end optional (no bonus points for back-end).
+- **Language & Tools:** Any languages, frameworks, or libraries allowed (vanilla JS, React, etc.).
+- **AI‑Assisted Coding OK:** GitHub Copilot, Cursor, and similar tools permitted. No no-code generators.
+
+---
+
+### Hosting & Deployment
+- **Accessible URL:** Host on Vercel, GitHub Pages, or similar.
+- **Keep Live Until Judging:** Ensure the link remains active through winner announcements.
+- **Simplicity:** No complex local setup required for evaluation.
+
+---
+
+### Judging Criteria
+1. **User Experience (UX):** Ease of navigation, clarity of actions.
+2. **Visual Design:** Aesthetics, brand consistency, polished animations.
+3. **Functionality:** All intended features (search, filters, map, ratings) work.
+4. **Code Quality:** Readability, modularity, comments, best practices.
+
+> **Tie‑Breaker:** In case of a tie, cleaner, better‑organized code wins.
+```
+

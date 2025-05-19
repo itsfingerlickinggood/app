@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Trips - Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo">
+            <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                <li><a href="trips.html" class="active"><i class="fas fa-suitcase"></i> Trips</a></li>
+                <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <button class="theme-toggle">
+                <input type="checkbox" class="theme-switch" id="theme-switch">
+                <label for="theme-switch" class="switch-label"></label>
+                <i class="fas fa-moon toggle-icon"></i>
+                <i class="fas fa-sun toggle-icon-sun"></i>
+            </button>
+            <div class="user-profile">
+                <a href="profile.html">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                    <span>Emma</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-container single-panel">
+        <section class="content-section">
+            <h2 class="section-title">My Trips</h2>
+            
+            <!-- Trip Planner -->
+            <div class="trip-planner">
+                <div class="countdown-timer">
+                    <h3>Trip Countdown</h3>
+                    <div class="countdown">
+                        <div class="countdown-item">
+                            <span class="count">14</span>
+                            <span class="unit">days</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="count">8</span>
+                            <span class="unit">hours</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="count">35</span>
+                            <span class="unit">minutes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="daily-planner">
+                    <h3>Daily Plan</h3>
+                    <div class="day-selector">
+                        <button class="day-btn">Day 1</button>
+                        <button class="day-btn active">Day 2</button>
+                        <button class="day-btn">Day 3</button>
+                        <button class="day-btn">Day 4</button>
+                        <button class="day-btn">+ Add</button>
+                    </div>
+                    <div class="timeline">
+                        <!-- Timeline events will be added by JS -->
+                        <div class="timeline-event">
+                            <div class="timeline-time">09:00</div>
+                            <div class="timeline-content">
+                                <h4>Visit Meiji Shrine</h4>
+                                <p>Experience traditional Tokyo at this beautiful Shinto shrine</p>
+                                <div class="timeline-location">Shibuya, Tokyo</div>
+                            </div>
+                        </div>
+                        <div class="timeline-event">
+                            <div class="timeline-time">12:00</div>
+                            <div class="timeline-content">
+                                <h4>Lunch at Harajuku</h4>
+                                <p>Try some trendy food at Takeshita Street</p>
+                                <div class="timeline-location">Harajuku, Tokyo</div>
+                            </div>
+                        </div>
+                        <div class="timeline-event">
+                            <div class="timeline-time">14:00</div>
+                            <div class="timeline-content">
+                                <h4>Shopping at Omotesando</h4>
+                                <p>Explore the high-end shops and unique architecture</p>
+                                <div class="timeline-location">Omotesando, Tokyo</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-event-btn">
+                        <i class="fas fa-plus"></i> Add Event
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Trip Cards -->
+            <div class="trips-section">
+                <div class="section-header">
+                    <h3>Upcoming & Past Trips</h3>
+                    <button class="add-trip-btn">
+                        <i class="fas fa-plus"></i> New Trip
+                    </button>
+                </div>
+                
+                <div class="trip-cards">
+                    <div class="trip-card upcoming">
+                        <div class="trip-badge">Upcoming</div>
+                        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop" alt="Tokyo Trip">
+                        <div class="trip-info">
+                            <h4>Tokyo Adventure</h4>
+                            <div class="trip-dates">June 1 - 14, 2025</div>
+                            <div class="trip-progress">
+                                <div class="progress-bar" style="width: 75%"></div>
+                                <div class="progress-text">75% Planned</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trip-card past">
+                        <div class="trip-badge">Past</div>
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop" alt="Paris Trip">
+                        <div class="trip-info">
+                            <h4>Paris Getaway</h4>
+                            <div class="trip-dates">Mar 10 - 17, 2024</div>
+                            <button class="view-memories">View Memories</button>
+                        </div>
+                    </div>
+                    
+                    <div class="trip-card past">
+                        <div class="trip-badge">Past</div>
+                        <img src="https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=600&h=400&fit=crop" alt="Barcelona Trip">
+                        <div class="trip-info">
+                            <h4>Barcelona Weekend</h4>
+                            <div class="trip-dates">Nov 5 - 8, 2023</div>
+                            <button class="view-memories">View Memories</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Create New Trip Section (Initially Hidden) -->
+            <div class="create-trip-section" style="display: none;">
+                <h3>Create New Trip</h3>
+                <form id="new-trip-form">
+                    <div class="form-field">
+                        <label for="trip-name">Trip Name</label>
+                        <input type="text" id="trip-name" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="departure-date">Departure Date</label>
+                            <input type="date" id="departure-date" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="return-date">Return Date</label>
+                            <input type="date" id="return-date" required>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="trip-destination">Destination</label>
+                        <select id="trip-destination" required>
+                            <option value="">Select a destination...</option>
+                            <option value="dest-001">Paris, France</option>
+                            <option value="dest-002">Bali, Indonesia</option>
+                            <option value="dest-003">Tokyo, Japan</option>
+                            <option value="dest-004">Santorini, Greece</option>
+                            <option value="dest-005">New York City, USA</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-trip">Cancel</button>
+                        <button type="submit" id="save-trip">Create Trip</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <button class="close-menu-btn">×</button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>itsfingerlickinggoodmust</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html" class="active"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/planner.js"></script>
+    <script type="module">
+        import { initPlanner } from './js/planner.js';
+        import { tripPlans, destinations } from './js/data.js';
+        
+        // Initialize the theme
+        function initTheme() {
+            const themeSwitch = document.getElementById('theme-switch');
+            if (themeSwitch) {
+                // Always start with light mode
+                const isDarkMode = false;
+                themeSwitch.checked = isDarkMode;
+                
+                // Apply initial theme
+                setTheme(isDarkMode);
+                
+                // Theme toggle
+                themeSwitch.addEventListener('change', () => {
+                    // Keep in light mode regardless of toggle
+                    setTheme(false);
+                });
+            }
+        }
+        
+        function setTheme(isDark) {
+            // Always use light theme
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        
+        // Initialize mobile menu
+        function initMobileMenu() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const closeMenuButton = document.querySelector('.close-menu-btn');
+            
+            if (mobileMenuToggle && mobileMenuOverlay && closeMenuButton) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.toggle('active');
+                    document.body.style.overflow = mobileMenuOverlay.classList.contains('active') ? 'hidden' : '';
+                });
+                
+                closeMenuButton.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                mobileMenuOverlay.addEventListener('click', (e) => {
+                    if (e.target === mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        }
+        
+        // Initialize trip functionality
+        function initTrips() {
+            // Add trip button functionality
+            const addTripBtn = document.querySelector('.add-trip-btn');
+            const createTripSection = document.querySelector('.create-trip-section');
+            const cancelTripBtn = document.getElementById('cancel-trip');
+            
+            if (addTripBtn && createTripSection && cancelTripBtn) {
+                addTripBtn.addEventListener('click', () => {
+                    createTripSection.style.display = 'block';
+                });
+                
+                cancelTripBtn.addEventListener('click', () => {
+                    createTripSection.style.display = 'none';
+                });
+            }
+            
+            // Trip form submission
+            const tripForm = document.getElementById('new-trip-form');
+            if (tripForm) {
+                tripForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // Here you would normally handle the form data
+                    alert('New trip created!');
+                    createTripSection.style.display = 'none';
+                });
+            }
+        }
+        
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initPlanner();
+            initTheme();
+            initMobileMenu();
+            initTrips();
+        });
+    </script>
+
+    <style>
+        /* Trip specific styles */
+        .trips-section {
+            margin-top: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .add-trip-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .trip-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .trip-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .trip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .trip-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .trip-info {
+            padding: 15px;
+        }
+        
+        .trip-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 1;
+        }
+        
+        .upcoming .trip-badge {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .past .trip-badge {
+            background-color: var(--gray-200);
+            color: var(--gray-500);
+        }
+        
+        .trip-dates {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 10px;
+        }
+        
+        .trip-progress {
+            margin-top: 10px;
+        }
+        
+        .view-memories {
+            margin-top: 10px;
+            padding: 6px 12px;
+            background-color: var(--white);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .view-memories:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Timeline event styling */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .timeline:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 2px;
+            background-color: var(--gray-200);
+        }
+        
+        .timeline-event {
+            position: relative;
+            padding: 15px 0 15px 20px;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-event:before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: -8px;
+            width: 16px;
+            height: 16px;
+            background-color: var(--primary);
+            border: 2px solid white;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .timeline-time {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content {
+            background-color: var(--gray-50);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .timeline-content h4 {
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content p {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 5px;
+        }
+        
+        .timeline-location {
+            font-size: 12px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .timeline-location:before {
+            content: '\f3c5';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 5px;
+            font-size: 10px;
+        }
+        
+        /* Form styling */
+        .create-trip-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--gray-50);
+            border-radius: 12px;
+        }
+        
+        .form-field {
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-field {
+            flex: 1;
+        }
+        
+        .form-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-field input,
+        .form-field select {
+            width: 100%;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .form-actions button {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        #cancel-trip {
+            background-color: var(--gray-200);
+            color: var(--gray-500);
+        }
+        
+        #save-trip {
+            background-color: var(--primary);
+            color: white;
+        }
+    </style>
+</body>
+</html> 

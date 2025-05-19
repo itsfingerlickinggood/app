@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<!-- Full-width profile page with enhanced map background spanning the entire viewport width -->
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emma Wallace | Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SF Pro or system fonts -->
+    <style>
+        /* Profile page styles */
+        :root {
+            --primary: #FF5A5F;
+            --text-dark: #222222;
+            --text-medium: #555555;
+            --text-light: #777777;
+            --border-light: #EEEEEE;
+            --bg-light: #FFFFFF;
+            --blue-verified: #1A73E8;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
+            --animation-easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --animation-timing-fast: 200ms;
+            --animation-timing-normal: 300ms;
+            --animation-timing-slow: 500ms;
+            --animation-scale-hover: 1.03;
+            --animation-rise-hover: -3px;
+        }
+        
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        main {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+        
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            overflow-x: visible;
+        }
+        
+        /* Enhanced Map cover */
+        .parallax-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            margin-right: calc(-50vw + 50%);
+        }
+        
+        .profile-cover-map {
+            width: 100vw;
+            height: 340px;
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center 25%;
+            box-shadow: inset 0 -12px 24px -12px rgba(0,0,0,0.15);
+            transition: transform 0.5s ease;
+            opacity: 0;
+            animation: fadeIn 800ms var(--animation-easing) forwards;
+            overflow: hidden;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+            z-index: 2;
+        }
+        
+        .map-pins-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .map-pin {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 90, 95, 0.9);
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: pinDrop 0.5s ease forwards;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        
+        .pin-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        
+        .map-pin:hover .pin-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-12px);
+        }
+        
+        @keyframes pinDrop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            40% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .cover-toggle {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            border-radius: 24px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+            z-index: 3;
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+        
+        .cover-toggle:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .cover-toggle-btn {
+            border: none;
+            background: none;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .cover-toggle-btn.active {
+            color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .cover-toggle-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+        }
+        
+        /* Profile info section */
+        .profile-info {
+            text-align: center;
+            padding: 0 24px;
+            margin-top: -80px;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .profile-photo {
+            width: 144px;
+            height: 144px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid var(--bg-light);
+            box-shadow: var(--shadow-md), inset 0 0 0 1px rgba(0,0,0,0.05);
+            margin: 0 auto;
+            background-color: #fff;
+            position: relative;
+            animation: fadeInScale 0.8s ease-out 200ms backwards;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .profile-photo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15), 0 0 0 2px rgba(255,90,95,0.1);
+        }
+        
+        .profile-photo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .profile-photo:hover::after {
+            opacity: 1;
+        }
+        
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .profile-photo:hover img {
+            transform: scale(1.05);
+        }
+        
+        .photo-edit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        
+        .profile-photo:hover .photo-edit-overlay {
+            opacity: 1;
+        }
+        
+        .photo-edit-button {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transform: scale(0.9);
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .photo-edit-button:hover {
+            transform: scale(1);
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .edit-icon {
+            fill: #333;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .profile-name {
+            font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 20px 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.02em;
+            color: var(--text-dark);
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards 400ms;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .verified-badge {
+            display: inline-block;
+            margin-left: 8px;
+            animation: pulse 2s 600ms;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .profile-bio {
+            font-size: 16px;
+            color: var(--text-medium);
+            margin: 12px auto;
+            max-width: 80%;
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards 500ms;
+        }
+        
+        .profile-location {
+            font-size: 15px;
+            color: var(--text-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px 0;
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards 600ms;
+        }
+        
+        .location-icon {
+            margin-right: 6px;
+            display: flex;
+            color: var(--text-light);
+        }
+        
+        .profile-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 0;
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards 700ms;
+        }
+        
+        .btn-follow, .btn-message, .btn-share {
+            height: 44px;
+            border-radius: 22px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s var(--animation-easing);
+            padding: 0 28px;
+            border: none;
+            user-select: none;
+        }
+        
+        .btn-follow {
+            background: linear-gradient(135deg, #FF5A5F, #FF385C);
+            color: white;
+            min-width: 110px;
+            box-shadow: 0 4px 12px rgba(255,90,95,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-follow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        
+        .btn-follow:hover::after {
+            opacity: 1;
+        }
+        
+        .btn-message {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border-light);
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0));
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        
+        .btn-message:hover::before {
+            opacity: 1;
+        }
+        
+        .btn-share {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-light);
+            color: var(--text-dark);
+            position: relative;
+        }
+        
+        .btn-share::after {
+            content: 'Share';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+        
+        .btn-share:hover::after {
+            opacity: 1;
+            bottom: -34px;
+        }
+        
+        .btn-follow:hover,
+        .btn-message:hover,
+        .btn-share:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .btn-follow:hover {
+            box-shadow: 0 8px 20px rgba(255,90,95,0.4);
+        }
+        
+        .btn-follow:active,
+        .btn-message:active,
+        .btn-share:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.1s ease;
+        }
+        
+        .following {
+            background: white !important;
+            color: var(--text-dark) !important;
+            border: 1px solid var(--border-light) !important;
+        }
+        
+        /* Stats section */
+        .profile-stats {
+            display: flex;
+            justify-content: space-evenly;
+            margin: 32px auto 24px;
+            padding: 0 20px;
+            max-width: 800px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 800ms;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s var(--animation-easing);
+            position: relative;
+            padding: 12px;
+            border-radius: 12px;
+            min-width: 90px;
+        }
+        
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 25%;
+            bottom: 25%;
+            width: 1px;
+            background-color: rgba(0,0,0,0.06);
+        }
+        
+        .stat-item:hover {
+            transform: translateY(var(--animation-rise-hover));
+            background-color: rgba(0,0,0,0.02);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.03);
+        }
+        
+        .stat-item:hover .stat-detail {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+            pointer-events: all;
+            z-index: 20;
+        }
+        
+        .stat-detail {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0.95);
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            opacity: 0;
+            transition: all 0.3s var(--animation-easing);
+            pointer-events: none;
+            z-index: 10;
+            width: 220px;
+            text-align: left;
+        }
+        
+        .stat-detail::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 12px;
+            height: 12px;
+            background: white;
+        }
+        
+        .detail-header {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .detail-content {
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+        
+        .detail-metric {
+            margin-bottom: 6px;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: fadeUpStaggered 0.3s var(--animation-easing) forwards;
+        }
+        
+        .stat-item:hover .detail-metric:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+        
+        .stat-item:hover .detail-metric:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        .stat-item:hover .detail-metric:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+        
+        @keyframes fadeUpStaggered {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #FF5A5F, #FF385C);
+            border-radius: 3px;
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+        
+        .progress-label {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: var(--text-medium);
+        }
+        
+        .progress-value {
+            font-size: 12px;
+            color: var(--text-medium);
+            text-align: right;
+        }
+        
+        .stat-number {
+            font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            position: relative;
+            display: inline-block;
+            opacity: 0;
+        }
+        
+        .stat-number.animate {
+            animation: countUp 2s ease-out 1s forwards;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-item:nth-child(5) .stat-number {
+            color: var(--text-dark);
+        }
+        
+        .stat-number.visible {
+            opacity: 1;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .travel-style-icon {
+            font-size: 26px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover .travel-style-icon {
+            transform: scale(1.15) rotate(10deg);
+        }
+        
+        .travel-style-badges {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .travel-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #f8f8f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .travel-badge:hover {
+            transform: scale(1.2);
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 2;
+            border-color: rgba(255,90,95,0.2);
+        }
+        
+        .rating-stars {
+            display: flex;
+            margin-top: 6px;
+            color: gold;
+        }
+        
+        .progress-circle {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 8px;
+        }
+        
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .progress-circle .bg {
+            stroke: #f0f0f0;
+        }
+        
+        .progress-circle .progress {
+            stroke: var(--primary);
+            stroke-dasharray: 0, 283;
+            transition: stroke-dasharray 1.5s ease;
+        }
+        
+        .progress-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .language-flags {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        
+        .flag-icon {
+            width: 24px;
+            height: 18px;
+            border-radius: 3px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .flag-icon:hover {
+            transform: scale(1.3);
+            z-index: 2;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Tabs navigation */
+        .profile-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 24px;
+            position: relative;
+            padding: 0 20px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 900ms;
+        }
+        
+        .tab {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-medium);
+            padding: 16px 0;
+            text-decoration: none;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-easing);
+        }
+        
+        .tab.active {
+            color: var(--text-dark);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+            animation: slideInFromBottom 0.3s var(--animation-easing);
+        }
+        
+        @keyframes slideInFromBottom {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .tab:hover {
+            color: var(--text-dark);
+        }
+        
+        .tab:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: rgba(255, 90, 95, 0.3);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--text-dark);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        
+        .tab-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--text-dark) transparent transparent transparent;
+        }
+        
+        .tab:hover .tab-tooltip {
+            opacity: 0.9;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        
+        /* Mobile tab scrolling */
+        @media (max-width: 768px) {
+            .profile-tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 0 20px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                position: relative;
+            }
+            
+            .profile-tabs::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .profile-tabs::before,
+            .profile-tabs::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 20px;
+                pointer-events: none;
+                z-index: 10;
+            }
+            
+            .profile-tabs::before {
+                left: 0;
+                background: linear-gradient(to right, white, rgba(255,255,255,0));
+            }
+            
+            .profile-tabs::after {
+                right: 0;
+                background: linear-gradient(to left, white, rgba(255,255,255,0));
+            }
+        }
+        
+        /* Photo grid */
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            padding: 24px 32px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 1s;
+        }
+        
+        .photo-item {
+            aspect-ratio: var(--aspect-ratio, 1/1); /* Default 1:1 ratio, overridden by JS */
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s var(--animation-easing);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
+            animation-delay: calc(var(--grid-index, 0) * 0.05s + 1s);
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .photo-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            z-index: 3;
+        }
+        
+        .photo-item:hover img {
+            transform: scale(1.08);
+        }
+        
+        .photo-meta {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .photo-item:hover .photo-meta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .photo-location {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .photo-date {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 6px;
+        }
+        
+        /* Masonry grid for photos */
+        .masonry-grid {
+            margin: 24px 32px;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 1s;
+        }
+        
+        .masonry-grid-item {
+            width: calc(20% - 16px);
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s var(--animation-easing);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
+            animation-delay: calc(var(--grid-index, 0) * 0.05s + 1s);
+        }
+        
+        .masonry-grid-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            z-index: 3;
+        }
+        
+        .masonry-grid-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+            transition: transform 0.5s ease;
+        }
+        
+        .masonry-grid-item:hover img {
+            transform: scale(1.08);
+        }
+        
+        @media (max-width: 1200px) {
+            .masonry-grid-item {
+                width: calc(25% - 16px);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .photos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .masonry-grid-item {
+                width: calc(33.333% - 16px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .photos-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 16px;
+            }
+            
+            .masonry-grid {
+                margin: 16px;
+            }
+            
+            .masonry-grid-item {
+                width: calc(50% - 12px);
+                margin-bottom: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .photos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .masonry-grid-item {
+                width: 100%;
+            }
+        }
+
+        .highlight-section {
+            margin: 20px 0 30px;
+            padding: 0 20px;
+        }
+
+        .highlight-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .highlight-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .highlight-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .highlight-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .highlight-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .highlight-circle::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            opacity: 0.7;
+        }
+
+        .highlight-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .highlight-item span {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-medium);
+        }
+
+        /* Tab content sections */
+        .tab-content {
+            display: none;
+            margin: 20px 0 40px;
+            padding: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 8px;
+            text-align: center;
+        }
+
+        .section-description {
+            font-size: 16px;
+            color: var(--text-medium);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+
+        /* Saved Places tab content */
+        .saved-places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .saved-place-card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s var(--animation-easing);
+            position: relative;
+            background-color: white;
+            transform: translateY(0);
+        }
+
+        .saved-place-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .saved-place-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .saved-place-card:hover .saved-place-image {
+            transform: scale(1.05);
+        }
+
+        .saved-place-info {
+            padding: 20px;
+        }
+
+        .saved-place-name {
+            font-weight: 700;
+            font-size: 18px;
+            margin: 0 0 8px;
+            color: var(--text-dark);
+        }
+
+        .saved-place-location {
+            font-size: 14px;
+            color: var(--text-medium);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .saved-place-tags {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .saved-place-tag {
+            font-size: 12px;
+            background-color: #f5f5f5;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--text-medium);
+            transition: all 0.2s ease;
+        }
+
+        .saved-place-tag:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(255, 90, 95, 0.2);
+        }
+
+        /* Trips tab content */
+        .trips-timeline {
+            max-width: 900px;
+            margin: 40px auto 20px;
+            position: relative;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            background-color: #eee;
+            transform: translateX(-50%);
+        }
+
+        .trip-entry {
+            display: flex;
+            margin-bottom: 50px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
+            animation-delay: calc(var(--entry-index, 0) * 0.1s);
+        }
+
+        .trip-entry:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .trip-date {
+            width: 130px;
+            text-align: right;
+            padding-right: 30px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 16px;
+            padding-top: 4px;
+        }
+
+        .trip-entry:nth-child(odd) .trip-date {
+            text-align: left;
+            padding-right: 0;
+            padding-left: 20px;
+        }
+
+        .trip-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid white;
+            z-index: 1;
+        }
+
+        .trip-content {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .trip-entry:nth-child(odd) .trip-content {
+            padding-left: 0;
+            padding-right: 20px;
+        }
+
+        .trip-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .trip-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .trip-card-info {
+            padding: 15px;
+        }
+
+        .trip-card-title {
+            margin: 0 0 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .trip-card-dates {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 8px;
+        }
+
+        .trip-card-description {
+            font-size: 14px;
+            color: var(--text-medium);
+            line-height: 1.5;
+        }
+
+        /* Reviews tab content */
+        .reviews-container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .review-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .review-place-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .review-content {
+            flex: 1;
+        }
+
+        .review-place-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0 0 5px;
+        }
+
+        .review-rating {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 10px;
+        }
+
+        .review-text {
+            font-size: 14px;
+            color: var(--text-medium);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .review-date {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* Map tab content */
+        .travel-map-container {
+            height: 500px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+            position: relative;
+            transition: all 0.3s var(--animation-easing);
+        }
+
+        .travel-map-container:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .travel-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+
+        .travel-stat-item {
+            text-align: center;
+            padding: 24px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            margin: 0 12px;
+            transition: all 0.3s var(--animation-easing);
+            transform: translateY(0);
+            opacity: 0;
+            animation: fadeUpStaggered 0.5s var(--animation-easing) forwards;
+            animation-delay: calc(var(--stat-index, 0) * 0.1s + 0.3s);
+        }
+
+        .travel-stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .travel-stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: countUp 2s ease-out 1.2s forwards;
+        }
+
+        .travel-stat-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-medium);
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 992px) {
+            .profile-stats {
+                flex-wrap: wrap;
+                gap: 24px;
+            }
+            
+            .stat-item {
+                flex-basis: 30%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 0 16px;
+            }
+            
+            .profile-cover-map {
+                height: 260px;
+            }
+            
+            .profile-photo {
+                width: 120px;
+                height: 120px;
+                margin-top: -60px;
+            }
+            
+            .profile-name {
+                font-size: 26px;
+                margin-top: 16px;
+            }
+            
+            .profile-bio {
+                font-size: 15px;
+            }
+            
+            .profile-stats {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding: 16px 0;
+                gap: 20px;
+                margin: 20px 0;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .profile-stats::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .stat-item {
+                flex: 0 0 120px;
+                min-width: 120px;
+            }
+            
+            .stat-item:not(:last-child)::after {
+                display: none;
+            }
+            
+            .trip-entry {
+                flex-direction: column;
+                padding-left: 50px;
+                margin-bottom: 40px;
+            }
+            
+            .trip-entry:nth-child(odd) {
+                flex-direction: column;
+                padding-left: 50px;
+                padding-right: 0;
+            }
+            
+            .timeline-line {
+                left: 20px;
+            }
+            
+            .trip-dot {
+                left: 20px;
+            }
+            
+            .trip-date {
+                width: 100%;
+                text-align: left;
+                padding: 0 0 10px 0;
+            }
+            
+            .trip-entry:nth-child(odd) .trip-date {
+                text-align: left;
+                padding: 0 0 10px 0;
+            }
+            
+            .trip-content {
+                padding-left: 0;
+            }
+            
+            .trip-entry:nth-child(odd) .trip-content {
+                padding-right: 0;
+            }
+            
+            .review-card {
+                flex-direction: column;
+                padding: 20px;
+            }
+            
+            .review-place-image {
+                width: 100%;
+                height: 180px;
+            }
+            
+            .travel-stats {
+                flex-wrap: wrap;
+                margin: 20px 0;
+            }
+            
+            .travel-stat-item {
+                flex-basis: calc(50% - 24px);
+                margin-bottom: 20px;
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-name {
+                font-size: 22px;
+            }
+            
+            .profile-cover-map {
+                height: 220px;
+            }
+            
+            .profile-photo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .profile-actions {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+            }
+            
+            .travel-stat-item {
+                flex-basis: 100%;
+                margin: 0 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header - KEEPING INTACT AS INSTRUCTED -->
+    <header class="app-header">
+        <div class="logo">
+            <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <button class="theme-toggle">
+                <input type="checkbox" class="theme-switch" id="theme-switch">
+                <label for="theme-switch" class="switch-label"></label>
+                <i class="fas fa-moon toggle-icon"></i>
+                <i class="fas fa-sun toggle-icon-sun"></i>
+            </button>
+            <div class="user-profile">
+                <a href="profile.html" class="active">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                    <span>Emma</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container - REDESIGNED AS PER SPECIFICATIONS -->
+    <main>
+        <div class="profile-container">
+            <!-- Enhanced Map banner with parallax -->
+            <div class="parallax-wrapper">
+                <div class="profile-cover-map" id="profile-cover">
+                    <div class="map-pins-container" id="map-pins"></div>
+                    <div class="map-overlay"></div>
+                </div>
+                <div class="cover-toggle">
+                    <button class="cover-toggle-btn map active" data-cover="map">Map</button>
+                    <button class="cover-toggle-btn photos" data-cover="photos">Photos</button>
+                </div>
+            </div>
+            
+            <!-- Profile information -->
+            <div class="profile-info">
+                    <div class="profile-photo">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma Wallace">
+                        <div class="photo-edit-overlay">
+                            <button class="photo-edit-button">
+                                <svg class="edit-icon" viewBox="0 0 24 24">
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                
+                <h1 class="profile-name">
+                    Emma Wallace
+                    <span class="verified-badge">
+                        <i class="fas fa-check-circle" style="color: #1A73E8;"></i>
+                    </span>
+                </h1>
+                
+                <p class="profile-bio">Exploring the world one place at a time</p>
+                
+                <div class="profile-location">
+                    <span class="location-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </span>
+                    Austin, Texas
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn-follow">Follow</button>
+                    <button class="btn-message">Message</button>
+                    <button class="btn-share">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats section -->
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="progress-circle">
+                        <svg width="60" height="60" viewBox="0 0 60 60">
+                            <circle class="bg" cx="30" cy="30" r="25" />
+                            <circle class="progress" cx="30" cy="30" r="25" />
+                        </svg>
+                        <div class="progress-center">87</div>
+                    </div>
+                    <span class="stat-number animate">87</span>
+                    <span class="stat-label">places visited</span>
+                    <div class="stat-detail">
+                        <div>Travel Progress:</div>
+                        <div>30% of UN recognized countries</div>
+                        <div>4 of 7 continents</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number animate">125</span>
+                    <span class="stat-label">followers</span>
+                    <div class="stat-detail">
+                        <div>+12 new followers this month</div>
+                        <div>Connect with like-minded travelers</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number animate">220</span>
+                    <span class="stat-label">following</span>
+                    <div class="stat-detail">
+                        <div>Following travelers from 32 countries</div>
+                        <div>Majority focused on adventure travel</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="travel-style-icon">
+                        <i class="fas fa-hiking"></i>
+                    </span>
+                    <span class="stat-label">Travel style</span>
+                    <div class="travel-style-badges">
+                        <div class="travel-badge"><i class="fas fa-mountain"></i></div>
+                        <div class="travel-badge"><i class="fas fa-water"></i></div>
+                        <div class="travel-badge"><i class="fas fa-camera"></i></div>
+                    </div>
+                    <div class="stat-detail">
+                        <div>Primary travel interests:</div>
+                        <div>- Hiking & outdoor adventures</div>
+                        <div>- Cultural immersion</div>
+                        <div>- Photography</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number">4.9</span>
+                    <div class="rating-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <div class="stat-detail">
+                        <div>Based on 47 trip reviews</div>
+                        <div>Top rated for local recommendations</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="language-flags">
+                        <img src="https://flagcdn.com/w20/mx.png" alt="Mexico" class="flag-icon">
+                        <img src="https://flagcdn.com/w20/es.png" alt="Spain" class="flag-icon">
+                        <img src="https://flagcdn.com/w20/us.png" alt="USA" class="flag-icon">
+                    </div>
+                    <span class="stat-label">Es English</span>
+                    <div class="stat-detail">
+                        <div>Languages:</div>
+                        <div>- English (Native)</div>
+                        <div>- Spanish (Fluent)</div>
+                        <div>- French (Basic)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Travel highlights section -->
+            <div class="highlight-section">
+                <div class="highlight-wrapper">
+                    <div class="highlight-item">
+                        <div class="highlight-circle">
+                            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=200&q=80" alt="Barcelona">
+                        </div>
+                        <span>Barcelona</span>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-circle">
+                            <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=200&q=80" alt="Italy">
+                        </div>
+                        <span>Italy</span>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-circle">
+                            <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=200&q=80" alt="Mountains">
+                        </div>
+                        <span>Alpine</span>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-circle">
+                            <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=200&q=80" alt="Beaches">
+                        </div>
+                        <span>Beaches</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation tabs -->
+            <div class="profile-tabs">
+                <div class="tab active">
+                    Photos
+                    <div class="tab-tooltip">View travel photos</div>
+                </div>
+                <div class="tab">
+                    Saved Places
+                    <div class="tab-tooltip">Bookmarked destinations</div>
+                </div>
+                <div class="tab">
+                    Trips
+                    <div class="tab-tooltip">Past and upcoming journeys</div>
+                </div>
+                <div class="tab">
+                    Reviews
+                    <div class="tab-tooltip">Emma's travel recommendations</div>
+                </div>
+                <div class="tab">
+                    Map
+                    <div class="tab-tooltip">Explore visited destinations</div>
+                </div>
+            </div>
+            
+            <!-- Photo grid -->
+            <div class="photos-grid">
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80" alt="Santorini, Greece">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Santorini, Greece
+                        </div>
+                        <div class="photo-date">June 2023</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris, France">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Paris, France
+                        </div>
+                        <div class="photo-date">April 2023</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?auto=format&fit=crop&w=800&q=80" alt="Amalfi Coast, Italy">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Amalfi Coast, Italy
+                        </div>
+                        <div class="photo-date">September 2022</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80" alt="Mountain landscape">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Swiss Alps
+                        </div>
+                        <div class="photo-date">January 2023</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=800&q=80" alt="New York City, USA">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> New York City, USA
+                        </div>
+                        <div class="photo-date">December 2022</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=800&q=80" alt="Tropical beach">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Maldives
+                        </div>
+                        <div class="photo-date">July 2022</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1526718583451-e88ebf774771?auto=format&fit=crop&w=800&q=80" alt="Kyoto, Japan">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Kyoto, Japan
+                        </div>
+                        <div class="photo-date">November 2021</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Zermatt, Switzerland
+                        </div>
+                        <div class="photo-date">March 2022</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80" alt="Barcelona, Spain">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Barcelona, Spain
+                        </div>
+                        <div class="photo-date">May 2022</div>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=800&q=80" alt="Bali, Indonesia">
+                    <div class="photo-meta">
+                        <div class="photo-location">
+                            <i class="fas fa-map-marker-alt"></i> Bali, Indonesia
+                        </div>
+                        <div class="photo-date">August 2022</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Saved Places tab content -->
+            <div id="saved-places-content" class="tab-content">
+                <h2 class="section-title">Saved Destinations</h2>
+                <p class="section-description">Places Emma has bookmarked for future adventures</p>
+                
+                <div class="saved-places-grid">
+                    <div class="saved-place-card">
+                        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80" alt="Cappadocia" class="saved-place-image">
+                        <div class="saved-place-info">
+                            <h3 class="saved-place-name">Cappadocia</h3>
+                            <div class="saved-place-location">
+                                <i class="fas fa-map-marker-alt"></i> Turkey
+                            </div>
+                            <div class="saved-place-tags">
+                                <span class="saved-place-tag">Hot Air Balloon</span>
+                                <span class="saved-place-tag">Caves</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-place-card">
+                        <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80" alt="Machu Picchu" class="saved-place-image">
+                        <div class="saved-place-info">
+                            <h3 class="saved-place-name">Machu Picchu</h3>
+                            <div class="saved-place-location">
+                                <i class="fas fa-map-marker-alt"></i> Peru
+                            </div>
+                            <div class="saved-place-tags">
+                                <span class="saved-place-tag">Hiking</span>
+                                <span class="saved-place-tag">Historic</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-place-card">
+                        <img src="https://images.unsplash.com/photo-1565717845034-c3e1acd0bd7b?auto=format&fit=crop&w=800&q=80" alt="Maldives" class="saved-place-image">
+                        <div class="saved-place-info">
+                            <h3 class="saved-place-name">Maldives</h3>
+                            <div class="saved-place-location">
+                                <i class="fas fa-map-marker-alt"></i> Indian Ocean
+                            </div>
+                            <div class="saved-place-tags">
+                                <span class="saved-place-tag">Beach</span>
+                                <span class="saved-place-tag">Luxury</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-place-card">
+                        <img src="https://images.unsplash.com/photo-1505852679233-d9fd70aff56d?auto=format&fit=crop&w=800&q=80" alt="Petra" class="saved-place-image">
+                        <div class="saved-place-info">
+                            <h3 class="saved-place-name">Petra</h3>
+                            <div class="saved-place-location">
+                                <i class="fas fa-map-marker-alt"></i> Jordan
+                            </div>
+                            <div class="saved-place-tags">
+                                <span class="saved-place-tag">Historic</span>
+                                <span class="saved-place-tag">UNESCO</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-place-card">
+                        <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=800&q=80" alt="Bora Bora" class="saved-place-image">
+                        <div class="saved-place-info">
+                            <h3 class="saved-place-name">Bora Bora</h3>
+                            <div class="saved-place-location">
+                                <i class="fas fa-map-marker-alt"></i> French Polynesia
+                            </div>
+                            <div class="saved-place-tags">
+                                <span class="saved-place-tag">Beach</span>
+                                <span class="saved-place-tag">Honeymoon</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-place-card">
+                        <img src="https://images.unsplash.com/photo-1492136344046-866c85e0bf04?auto=format&fit=crop&w=800&q=80" alt="Provence" class="saved-place-image">
+                        <div class="saved-place-info">
+                            <h3 class="saved-place-name">Provence</h3>
+                            <div class="saved-place-location">
+                                <i class="fas fa-map-marker-alt"></i> France
+                            </div>
+                            <div class="saved-place-tags">
+                                <span class="saved-place-tag">Lavender</span>
+                                <span class="saved-place-tag">Wine</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trips tab content -->
+            <div id="trips-content" class="tab-content">
+                <h2 class="section-title">Travel Timeline</h2>
+                <p class="section-description">Emma's journey around the world</p>
+                
+                <div class="trips-timeline">
+                    <div class="timeline-line"></div>
+                    
+                    <div class="trip-entry">
+                        <div class="trip-date">June 2023</div>
+                        <div class="trip-dot"></div>
+                        <div class="trip-content">
+                            <div class="trip-card">
+                                <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80" alt="Santorini">
+                                <div class="trip-card-info">
+                                    <h3 class="trip-card-title">Greek Island Hopping</h3>
+                                    <div class="trip-card-dates">June 10 - June 24, 2023</div>
+                                    <p class="trip-card-description">Explored the stunning islands of Santorini, Mykonos, and Crete. Highlights included watching the sunset in Oia and swimming in crystal clear waters.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trip-entry">
+                        <div class="trip-date">April 2023</div>
+                        <div class="trip-dot"></div>
+                        <div class="trip-content">
+                            <div class="trip-card">
+                                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris">
+                                <div class="trip-card-info">
+                                    <h3 class="trip-card-title">Spring in Paris</h3>
+                                    <div class="trip-card-dates">April 5 - April 12, 2023</div>
+                                    <p class="trip-card-description">A week-long cultural journey through the romantic streets of Paris. Visited the Louvre, Eiffel Tower, and enjoyed countless pastries at local cafes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trip-entry">
+                        <div class="trip-date">January 2023</div>
+                        <div class="trip-dot"></div>
+                        <div class="trip-content">
+                            <div class="trip-card">
+                                <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                                <div class="trip-card-info">
+                                    <h3 class="trip-card-title">Swiss Winter Wonderland</h3>
+                                    <div class="trip-card-dates">January 15 - January 25, 2023</div>
+                                    <p class="trip-card-description">Ski trip to the Swiss Alps. Stayed in a charming chalet, enjoyed mountain views, and experienced some of the best slopes in Europe.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews tab content -->
+            <div id="reviews-content" class="tab-content">
+                <h2 class="section-title">Travel Reviews</h2>
+                <p class="section-description">Emma's honest opinions about places she's visited</p>
+                
+                <div class="reviews-container">
+                    <div class="review-card">
+                        <img src="https://images.unsplash.com/photo-1565865735424-fe8edb638b7b?auto=format&fit=crop&w=800&q=80" alt="Ritz Paris" class="review-place-image">
+                        <div class="review-content">
+                            <h3 class="review-place-name">Ritz Paris Hotel</h3>
+                            <div class="review-rating">
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                            </div>
+                            <p class="review-text">An absolutely stunning experience from start to finish. The service was impeccable, the rooms were luxurious, and the location couldn't be better. The concierge arranged everything perfectly for our stay.</p>
+                            <div class="review-date">Reviewed in April 2023</div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-card">
+                        <img src="https://images.unsplash.com/photo-1565658144659-19f17574dc51?auto=format&fit=crop&w=800&q=80" alt="Santorini Restaurant" class="review-place-image">
+                        <div class="review-content">
+                            <h3 class="review-place-name">Argo Restaurant, Santorini</h3>
+                            <div class="review-rating">
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star-half-alt" style="color: gold;"></i>
+                            </div>
+                            <p class="review-text">Incredible seafood with a view that's worth every penny. We had the grilled octopus and sea bass which were perfectly prepared. The sunset view from the terrace was breathtaking. Reservations are a must!</p>
+                            <div class="review-date">Reviewed in June 2023</div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-card">
+                        <img src="https://images.unsplash.com/photo-1677874842542-d47384832c20?auto=format&fit=crop&w=800&q=80" alt="Swiss Ski Resort" class="review-place-image">
+                        <div class="review-content">
+                            <h3 class="review-place-name">Zermatt Ski Resort</h3>
+                            <div class="review-rating">
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                                <i class="fas fa-star" style="color: gold;"></i>
+                            </div>
+                            <p class="review-text">World-class skiing with the most spectacular mountain views. The resort is well-organized with excellent lifts and a variety of runs for all skill levels. The après-ski scene is lively and fun too!</p>
+                            <div class="review-date">Reviewed in January 2023</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map tab content -->
+            <div id="map-content" class="tab-content">
+                <h2 class="section-title">Travel Map</h2>
+                <p class="section-description">Explore Emma's adventures around the globe</p>
+                
+                <div class="travel-stats">
+                    <div class="travel-stat-item">
+                        <div class="travel-stat-number">27</div>
+                        <div class="travel-stat-label">Countries Visited</div>
+                    </div>
+                    <div class="travel-stat-item">
+                        <div class="travel-stat-number">87</div>
+                        <div class="travel-stat-label">Cities Explored</div>
+                    </div>
+                    <div class="travel-stat-item">
+                        <div class="travel-stat-number">4</div>
+                        <div class="travel-stat-label">Continents</div>
+                    </div>
+                    <div class="travel-stat-item">
+                        <div class="travel-stat-number">142k</div>
+                        <div class="travel-stat-label">Miles Traveled</div>
+                    </div>
+                </div>
+                
+                <div id="travel-map" class="travel-map-container">
+                    <!-- Mapbox map will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Mobile Menu Overlay - KEEPING INTACT AS INSTRUCTED -->
+    <div class="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <button class="close-menu-btn">×</button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>itsfingerlickinggoodmust</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html"><i class="fas fa-tools"></i> Tools</a></li>
+                    <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize the theme
+        function initTheme() {
+            const themeSwitch = document.getElementById('theme-switch');
+            if (themeSwitch) {
+                // Always start with light mode
+                const isDarkMode = false;
+                themeSwitch.checked = isDarkMode;
+                
+                // Apply initial theme
+                setTheme(isDarkMode);
+                
+                // Theme toggle
+                themeSwitch.addEventListener('change', () => {
+                    // Keep in light mode regardless of toggle
+                    setTheme(false);
+                });
+            }
+        }
+        
+        function setTheme(isDark) {
+            // Always use light theme
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        
+        // Initialize tab switching
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Handle tab navigation
+                    if (tab.textContent.includes('Saved Places')) {
+                        window.location.href = 'saved.html';
+                    } else if (tab.textContent.includes('Trips')) {
+                        window.location.href = 'trips.html';
+                    }
+                });
+            });
+        }
+        
+        // Initialize mobile menu
+        function initMobileMenu() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const closeMenuButton = document.querySelector('.close-menu-btn');
+            
+            if (mobileMenuToggle && mobileMenuOverlay && closeMenuButton) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.toggle('active');
+                    document.body.style.overflow = mobileMenuOverlay.classList.contains('active') ? 'hidden' : '';
+                });
+                
+                closeMenuButton.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                mobileMenuOverlay.addEventListener('click', (e) => {
+                    if (e.target === mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        }
+        
+        // Initialize action buttons
+        function initActionButtons() {
+            const followBtn = document.querySelector('.btn-follow');
+            const messageBtn = document.querySelector('.btn-message');
+            const shareBtn = document.querySelector('.btn-share');
+            
+            if (followBtn) {
+                followBtn.addEventListener('click', () => {
+                    if (followBtn.classList.contains('following')) {
+                        followBtn.textContent = 'Follow';
+                        followBtn.classList.remove('following');
+                        followBtn.style.backgroundColor = '';
+                        followBtn.style.background = 'linear-gradient(135deg, #FF5A5F, #FF385C)';
+                        followBtn.style.color = 'white';
+                        followBtn.style.border = 'none';
+                    } else {
+                        followBtn.textContent = 'Following';
+                        followBtn.classList.add('following');
+                        followBtn.style.background = 'white';
+                        followBtn.style.color = '#222222';
+                        followBtn.style.border = '1px solid #DDDDDD';
+                    }
+                });
+            }
+            
+            if (messageBtn) {
+                messageBtn.addEventListener('click', () => {
+                    alert('Messaging feature will be available soon!');
+                });
+            }
+            
+            if (shareBtn) {
+                shareBtn.addEventListener('click', () => {
+                    alert('Share this profile with your friends!');
+                });
+            }
+        }
+        
+        // Initialize profile photo actions
+        function initProfilePhoto() {
+            const profilePhoto = document.querySelector('.profile-photo');
+            
+            if (profilePhoto) {
+                profilePhoto.addEventListener('click', () => {
+                    alert('Profile photo gallery feature coming soon!');
+                });
+            }
+        }
+        
+        // Initialize cover toggle
+        function initCoverToggle() {
+            const coverToggleBtns = document.querySelectorAll('.cover-toggle-btn');
+            const coverMap = document.getElementById('profile-cover');
+            
+            if (coverToggleBtns.length && coverMap) {
+                coverToggleBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        coverToggleBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const coverType = btn.getAttribute('data-cover');
+                        
+                        if (coverType === 'map') {
+                            coverMap.style.backgroundImage = "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80')";
+                        } else if (coverType === 'photos') {
+                            coverMap.style.backgroundImage = "url('https://images.unsplash.com/photo-1526718583451-e88ebf774771?auto=format&fit=crop&w=1200&q=80')";
+                        }
+                    });
+                });
+            }
+        }
+        
+        // Initialize parallax effect
+        function initParallax() {
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const coverMap = document.getElementById('profile-cover');
+                
+                if (coverMap) {
+                    // More subtle parallax effect to avoid any visual issues
+                    coverMap.style.transform = `translateY(${scrollTop * 0.2}px)`;
+                }
+            });
+        }
+        
+        // Initialize highlights
+        function initHighlights() {
+            const highlightItems = document.querySelectorAll('.highlight-item');
+            
+            highlightItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const destination = item.querySelector('span').textContent;
+                    alert(`${destination} story will be displayed here!`);
+                });
+            });
+        }
+        
+        // Initialize stats animations
+        function initStats() {
+            const statNumbers = document.querySelectorAll('.stat-number.animate');
+            const progressCircle = document.querySelector('.progress-circle .progress');
+            
+            if (progressCircle) {
+                // Set the progress (87 places = ~30% of countries, circumference is 2πr = ~157)
+                const progress = 87 / 195 * 283; // 195 countries, circle perimeter is 283
+                progressCircle.style.strokeDasharray = `${progress}, 283`;
+            }
+            
+            // Use Intersection Observer to trigger animations when elements come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            statNumbers.forEach(stat => {
+                observer.observe(stat);
+            });
+        }
+        
+        // Initialize photo interactions
+        function initPhotoInteractions() {
+            const photoItems = document.querySelectorAll('.photo-item');
+            
+            photoItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const imgSrc = item.querySelector('img').src;
+                    const location = item.querySelector('.photo-location').textContent.trim();
+                    
+                    // Simple modal implementation
+                    // In a full implementation, you would create a proper modal
+                    alert(`Opening ${location} in fullscreen mode`);
+                });
+            });
+        }
+        
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initTabs();
+            initMobileMenu();
+            initActionButtons();
+            initProfilePhoto();
+            initCoverToggle();
+            initParallax();
+            initHighlights();
+            initStats();
+            initPhotoInteractions();
+            initMapPins();
+            initMasonryGrid();
+            initTabContents();
+            setGridItemsIndex();
+            
+            // Add animation classes once the page is loaded
+            setTimeout(() => {
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    stat.classList.add('visible');
+                });
+                
+                // Animate progress fill
+                const progressFills = document.querySelectorAll('.progress-fill');
+                progressFills.forEach(fill => {
+                    fill.style.width = fill.getAttribute('data-value') || '0%';
+                });
+            }, 1000);
+        });
+        
+        // Initialize map pins
+        function initMapPins() {
+            const pinData = [
+                { lat: 48.8566, lng: 2.3522, name: 'Paris', delay: 100 },
+                { lat: 41.9028, lng: 12.4964, name: 'Rome', delay: 200 },
+                { lat: 35.6762, lng: 139.6503, name: 'Tokyo', delay: 300 },
+                { lat: 40.7128, lng: -74.0060, name: 'New York', delay: 400 },
+                { lat: 36.3932, lng: 25.4615, name: 'Santorini', delay: 500 },
+                { lat: 25.2048, lng: 55.2708, name: 'Dubai', delay: 600 },
+                { lat: 1.3521, lng: 103.8198, name: 'Singapore', delay: 700 },
+                { lat: -33.8688, lng: 151.2093, name: 'Sydney', delay: 800 }
+            ];
+            
+            const mapContainer = document.getElementById('map-pins');
+            if (!mapContainer) return;
+            
+            pinData.forEach(pin => {
+                const pinElement = document.createElement('div');
+                pinElement.className = 'map-pin';
+                pinElement.style.animationDelay = `${pin.delay}ms`;
+                
+                // Convert lat/lng to relative position within container
+                const x = ((pin.lng + 180) / 360) * 100;
+                const y = ((90 - pin.lat) / 180) * 100;
+                
+                pinElement.style.left = `${x}%`;
+                pinElement.style.top = `${y}%`;
+                
+                // Add tooltip with location name
+                const tooltip = document.createElement('div');
+                tooltip.className = 'pin-tooltip';
+                tooltip.textContent = pin.name;
+                pinElement.appendChild(tooltip);
+                
+                // Add click handler
+                pinElement.addEventListener('click', () => {
+                    alert(`Showing details for ${pin.name}`);
+                });
+                
+                mapContainer.appendChild(pinElement);
+            });
+        }
+        
+        // Initialize Masonry Grid for photos
+        function initMasonryGrid() {
+            // This would normally use a library like Masonry.js
+            // For this example, we'll just set different aspect ratios
+            const photoItems = document.querySelectorAll('.photo-item');
+            const aspectRatios = ['1/1', '4/5', '3/4', '3/2', '16/9', '1/1', '3/2', '4/3', '1/1', '5/4'];
+            
+            photoItems.forEach((item, index) => {
+                item.style.setProperty('--aspect-ratio', aspectRatios[index % aspectRatios.length]);
+            });
+        }
+        
+        // Set index for staggered animations
+        function setGridItemsIndex() {
+            const photoItems = document.querySelectorAll('.photo-item');
+            photoItems.forEach((item, index) => {
+                item.style.setProperty('--grid-index', index);
+            });
+            
+            const statItems = document.querySelectorAll('.travel-stat-item');
+            statItems.forEach((item, index) => {
+                item.style.setProperty('--stat-index', index);
+            });
+            
+            const tripEntries = document.querySelectorAll('.trip-entry');
+            tripEntries.forEach((item, index) => {
+                item.style.setProperty('--entry-index', index);
+            });
+            
+            const reviewCards = document.querySelectorAll('.review-card');
+            reviewCards.forEach((item, index) => {
+                item.style.setProperty('--review-index', index);
+            });
+        }
+        
+        // Tab content initialization
+        function initTabContents() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Show the first tab by default
+            if (tabContents.length > 0) {
+                tabContents[0].classList.add('active');
+            }
+            
+            tabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to current tab and matching content
+                    tab.classList.add('active');
+                    if (tabContents[index]) {
+                        tabContents[index].classList.add('active');
+                    }
+                    
+                    // Special case for Map tab which needs to initialize Mapbox
+                    if (tab.textContent.trim().includes('Map') && typeof mapboxgl !== 'undefined') {
+                        setTimeout(() => {
+                            initMapbox();
+                        }, 100);
+                    }
+                });
+            });
+        }
+        
+        // Initialize Mapbox map in the Map tab
+        function initMapbox() {
+            const mapContainer = document.getElementById('travel-map');
+            if (!mapContainer || typeof mapboxgl === 'undefined') return;
+            
+            // Check if map is already initialized
+            if (mapContainer._map) return;
+            
+            mapboxgl.accessToken = 'pk.eyJ1Ijoic2FtcGxldXNlciIsImEiOiJja3M1enVlZHkwaDkxMm9vNzZyZmRlbXpzIn0.ZZayzS3JYIV-QP1moifMwg';
+            
+            const map = new mapboxgl.Map({
+                container: 'travel-map',
+                style: 'mapbox://styles/mapbox/light-v10',
+                center: [0, 30],
+                zoom: 1.5
+            });
+            
+            // Add markers for visited places
+            const places = [
+                { lng: 2.3522, lat: 48.8566, name: 'Paris' },
+                { lng: 12.4964, lat: 41.9028, name: 'Rome' },
+                { lng: 139.6503, lat: 35.6762, name: 'Tokyo' },
+                { lng: -74.0060, lat: 40.7128, name: 'New York' },
+                { lng: 25.4615, lat: 36.3932, name: 'Santorini' }
+            ];
+            
+            map.on('load', () => {
+                places.forEach(place => {
+                    const marker = document.createElement('div');
+                    marker.className = 'mapbox-marker';
+                    marker.style.width = '15px';
+                    marker.style.height = '15px';
+                    marker.style.borderRadius = '50%';
+                    marker.style.backgroundColor = '#FF5A5F';
+                    marker.style.border = '2px solid white';
+                    marker.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+                    
+                    new mapboxgl.Marker(marker)
+                        .setLngLat([place.lng, place.lat])
+                        .setPopup(new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(`<h3>${place.name}</h3>`))
+                        .addTo(map);
+                });
+            });
+            
+            mapContainer._map = map;
+        }
+        
+        // Enhanced profile photo interaction
+        function initProfilePhoto() {
+            const profilePhoto = document.querySelector('.profile-photo');
+            const editButton = document.querySelector('.photo-edit-button');
+            
+            if (profilePhoto) {
+                profilePhoto.addEventListener('click', (e) => {
+                    if (e.target === editButton || editButton.contains(e.target)) {
+                        alert('Edit profile photo');
+                    } else {
+                        alert('Open profile photo gallery');
+                    }
+                });
+            }
+            
+            if (editButton) {
+                editButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    alert('Edit profile photo');
+                });
+            }
+        }
+    </script>
+</body>
+</html> 

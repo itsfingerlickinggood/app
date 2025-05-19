@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packing Checklist - Travel Idea Wall</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo">
+            <h1><a href="index.html"><i class="fas fa-globe-americas"></i> Travel Idea Wall</a></h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                <li><a href="tools.html" class="active"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <button class="theme-toggle">
+                <input type="checkbox" class="theme-switch" id="theme-switch">
+                <label for="theme-switch" class="switch-label"></label>
+                <i class="fas fa-moon toggle-icon"></i>
+                <i class="fas fa-sun toggle-icon-sun"></i>
+            </button>
+            <div class="user-profile">
+                <a href="profile.html">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                    <span>Emma</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-container single-panel">
+        <section class="content-section">
+            <div class="packing-checklist">
+                <div class="checklist-header">
+                    <h2>Packing Checklist</h2>
+                    <div class="current-date">2025-05-17</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 60%;"></div>
+                        <span class="progress-text">60% packed</span>
+                    </div>
+                </div>
+                <div class="checklist-categories">
+                    <button class="category-btn active" data-category="essential">Essentials</button>
+                    <button class="category-btn" data-category="clothing">Clothing</button>
+                    <button class="category-btn" data-category="toiletries">Toiletries</button>
+                    <button class="category-btn" data-category="electronics">Electronics</button>
+                    <button class="category-btn" data-category="documents">Documents</button>
+                </div>
+                <div class="checklist-items">
+                    <!-- Checklist items will be added here by JS -->
+                </div>
+                <div class="add-item-form">
+                    <input type="text" id="new-item-input" placeholder="Add new item...">
+                    <select id="item-category">
+                        <option value="essential">Essential</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="toiletries">Toiletries</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="documents">Documents</option>
+                    </select>
+                    <button id="add-item-btn">Add</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <button class="close-menu-btn">×</button>
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+                        <span>Emma</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-compass"></i> Discover</a></li>
+                    <li><a href="map.html"><i class="fas fa-map-marked-alt"></i> Map</a></li>
+                    <li><a href="saved.html"><i class="fas fa-heart"></i> Saved</a></li>
+                    <li><a href="trips.html"><i class="fas fa-suitcase"></i> Trips</a></li>
+                    <li><a href="tools.html" class="active"><i class="fas fa-tools"></i> Tools</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/checklist.js"></script>
+    <script type="module">
+        import { initChecklist } from './js/checklist.js';
+        
+        // Initialize the theme
+        function initTheme() {
+            const themeSwitch = document.getElementById('theme-switch');
+            if (themeSwitch) {
+                // Always start with light mode
+                const isDarkMode = false;
+                themeSwitch.checked = isDarkMode;
+                
+                // Apply initial theme
+                setTheme(isDarkMode);
+                
+                // Theme toggle
+                themeSwitch.addEventListener('change', () => {
+                    // Keep in light mode regardless of toggle
+                    setTheme(false);
+                });
+            }
+        }
+        
+        function setTheme(isDark) {
+            // Always use light theme
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        
+        // Initialize mobile menu
+        function initMobileMenu() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const closeMenuButton = document.querySelector('.close-menu-btn');
+            
+            if (mobileMenuToggle && mobileMenuOverlay && closeMenuButton) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.toggle('active');
+                    document.body.style.overflow = mobileMenuOverlay.classList.contains('active') ? 'hidden' : '';
+                });
+                
+                closeMenuButton.addEventListener('click', () => {
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                mobileMenuOverlay.addEventListener('click', (e) => {
+                    if (e.target === mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        }
+        
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initChecklist();
+            initTheme();
+            initMobileMenu();
+        });
+    </script>
+</body>
+</html> 

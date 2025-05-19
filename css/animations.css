@@ -1,0 +1,675 @@
+/* ===== Keyframe Animations ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes popSmooth {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.08);
+    }
+    70% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 106, 255, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 106, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 106, 255, 0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotateHalf {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        box-shadow: 0 0 0 0 rgba(56, 97, 224, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 0 20px rgba(56, 97, 224, 0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(56, 97, 224, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(56, 97, 224, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(56, 97, 224, 0.2);
+    }
+}
+
+@keyframes borderPulse {
+    0% {
+        border-color: rgba(56, 97, 224, 0.4);
+    }
+    50% {
+        border-color: rgba(56, 97, 224, 1);
+    }
+    100% {
+        border-color: rgba(56, 97, 224, 0.4);
+    }
+}
+
+@keyframes heartBeat {
+    0% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.3);
+    }
+    28% {
+        transform: scale(1);
+    }
+    42% {
+        transform: scale(1.3);
+    }
+    70% {
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes fadeFlash {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes searchFocus {
+    0% {
+        box-shadow: var(--shadow-sm);
+        background-color: var(--surface-alt);
+    }
+    100% {
+        box-shadow: var(--shadow-md), var(--focus-ring);
+        background-color: var(--surface);
+    }
+}
+
+@keyframes successPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(55, 184, 147, 0.4);
+        background-color: var(--surface);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(55, 184, 147, 0);
+        background-color: rgba(55, 184, 147, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(55, 184, 147, 0);
+        background-color: var(--surface);
+    }
+}
+
+@keyframes mapMarkerBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes cardHover {
+    0% {
+        transform: translateY(0);
+        box-shadow: var(--shadow-md);
+    }
+    100% {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-xl);
+    }
+}
+
+/* ===== Animation Utilities ===== */
+.app-header {
+    animation: fadeInDown 0.5s var(--easing-decelerate) forwards;
+}
+
+.logo svg {
+    animation: rotate 20s linear infinite;
+    animation-play-state: paused;
+}
+
+.logo:hover svg {
+    animation-play-state: running;
+}
+
+.main-nav a {
+    transition: color 0.2s var(--easing-standard), 
+                background-color 0.2s var(--easing-standard);
+}
+
+.main-nav a:hover {
+    animation: pulse 2s infinite;
+}
+
+.main-nav a.active {
+    animation: none;
+}
+
+.pill,
+.favorite-btn,
+.carousel-item,
+.destination-card,
+.section-title,
+.map-marker,
+.modal-content,
+.notification-badge {
+    animation-fill-mode: both;
+}
+
+.destination-card:nth-child(1),
+.carousel-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.destination-card:nth-child(2),
+.carousel-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.destination-card:nth-child(3),
+.carousel-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.destination-card:nth-child(4),
+.carousel-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.destination-card:nth-child(5),
+.carousel-item:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.destination-card:nth-child(6),
+.carousel-item:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.section-title {
+    animation: fadeInLeft 0.6s var(--easing-decelerate) forwards;
+    animation-delay: 0.2s;
+}
+
+.section-title::after {
+    animation: slideRight 0.8s var(--easing-decelerate) forwards;
+    animation-delay: 0.4s;
+}
+
+@keyframes slideRight {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+    100% {
+        width: 40px;
+        opacity: 1;
+    }
+}
+
+.pill.active {
+    animation: borderPulse 2s infinite;
+}
+
+.pill {
+    transition: all 0.25s var(--easing-standard);
+}
+
+.pill:hover {
+    animation: pulse 2s infinite;
+}
+
+.pill i {
+    transition: transform 0.3s var(--transition-bounce);
+}
+
+.pill:hover i {
+    animation: popSmooth 0.5s var(--easing-standard);
+}
+
+.favorite-btn {
+    transform-origin: center;
+}
+
+.favorite-btn.active,
+.favorite-btn:active {
+    animation: heartBeat 0.5s var(--easing-standard);
+}
+
+mapbox-search-box {
+    will-change: transform, box-shadow;
+}
+
+mapbox-search-box:focus-within {
+    animation: searchFocus 0.3s var(--easing-standard) forwards;
+}
+
+.star.selected, .star:hover {
+    animation: starSelect 0.3s var(--easing-standard) forwards;
+}
+
+.map-bottom-card.active {
+    animation: slideUp 0.4s var(--easing-decelerate) forwards;
+}
+
+.detail-modal.active .modal-content {
+    animation: slideUp 0.4s var(--easing-decelerate) forwards;
+}
+
+.pill:hover, 
+.carousel-item:hover, 
+.destination-card:hover, 
+.favorite-btn:hover, 
+.carousel-arrow:hover, 
+.notification-button:hover, 
+.user-avatar:hover {
+    will-change: transform, box-shadow;
+}
+
+.mapboxgl-marker {
+    transition: transform 0.3s var(--easing-standard);
+}
+
+.mapboxgl-marker:hover {
+    animation: mapMarkerBounce 0.6s var(--easing-standard);
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.pill:active,
+.carousel-arrow:active,
+.favorite-btn:active {
+    transform: scale(0.95);
+}
+
+.swap-currency {
+    transition: transform 0.3s var(--easing-standard);
+}
+
+.swap-currency:hover {
+    animation: rotate 1s var(--easing-standard);
+}
+
+.swap-currency.rotate {
+    animation: rotateHalf 0.3s var(--easing-standard) forwards;
+}
+
+.progress-fill {
+    transition: width 0.6s var(--easing-decelerate);
+}
+
+.progress-fill.animate {
+    animation: slideRight 1s var(--easing-decelerate) forwards;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.modal-tab-content.active {
+    animation: fadeInUp 0.4s var(--easing-decelerate) forwards;
+}
+
+.map-marker {
+    transition: transform 0.3s var(--easing-standard);
+    will-change: transform;
+}
+
+.map-marker:hover {
+    animation: bounce 0.7s var(--easing-standard);
+    z-index: 10;
+}
+
+.notification-badge {
+    animation: pulse 2s infinite;
+    transform-origin: center;
+}
+
+.user-avatar {
+    transition: transform 0.3s var(--easing-standard), 
+                box-shadow 0.3s var(--easing-standard);
+}
+
+.user-avatar:hover {
+    animation: pulse 2s infinite;
+}
+
+.carousel {
+    scroll-behavior: smooth;
+}
+
+.carousel-item {
+    transition: transform 0.3s var(--easing-standard), 
+                box-shadow 0.3s var(--easing-standard);
+}
+
+.carousel-arrow {
+    transition: opacity 0.3s var(--easing-standard), 
+                transform 0.3s var(--easing-standard),
+                background-color 0.3s var(--easing-standard);
+}
+
+.badge {
+    transform-origin: center;
+}
+
+@media (max-width: 767px) {
+    mapbox-search-box:focus-within {
+        animation: searchFocus 0.3s var(--easing-standard) forwards;
+    }
+    
+    .mobile-tabs .pill {
+        animation: fadeInRight 0.4s var(--easing-decelerate) forwards;
+        animation-delay: calc(0.05s * var(--pill-index, 0));
+    }
+    
+    .mobile-menu-toggle {
+        animation: pulse 2s infinite;
+        animation-play-state: paused;
+    }
+}
+
+#search-box-container.focused mapbox-search-box {
+    animation: searchFocus 0.3s var(--easing-standard) forwards;
+}
+
+#search-box-container.success mapbox-search-box {
+    animation: successPulse 1s var(--easing-standard);
+}
+
+.mapboxgl-popup {
+    animation: fadeInUp 0.4s var(--easing-decelerate) forwards;
+}
+
+.mapboxgl-popup-content {
+    transition: transform 0.3s var(--easing-standard);
+    will-change: transform;
+}
+
+.mapboxgl-popup-content:hover {
+    animation: pulse 2s infinite;
+    animation-play-state: paused;
+    animation-play-state: running;
+}
+
+.staggered-item {
+    opacity: 0;
+    animation: fadeInUp 0.5s var(--easing-decelerate) forwards;
+    animation-delay: calc(0.1s * var(--item-index, 0));
+}
+
+@keyframes starSelect {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* App Entry Animation */
+.app-entry-animation .left-panel,
+.app-entry-animation .right-panel,
+.app-entry-animation .destination-card,
+.app-entry-animation .section-title,
+.app-entry-animation .carousel-item {
+    opacity: 0;
+}
+
+.app-entry-animation.loaded .left-panel {
+    animation: fadeInRight 0.6s var(--easing-decelerate) forwards;
+}
+
+.app-entry-animation.loaded .right-panel {
+    animation: fadeInLeft 0.6s var(--easing-decelerate) forwards;
+}
+
+.app-entry-animation.loaded .section-title {
+    animation: fadeInUp 0.5s var(--easing-decelerate) forwards;
+    animation-delay: 0.2s;
+}
+
+.app-entry-animation.loaded .destination-card {
+    animation: fadeInUp 0.5s var(--easing-decelerate) forwards;
+    animation-delay: calc(0.1s * var(--card-index, 0) + 0.3s);
+}
+
+.app-entry-animation.loaded .carousel-item {
+    animation: fadeInUp 0.5s var(--easing-decelerate) forwards;
+    animation-delay: calc(0.1s * var(--item-index, 0) + 0.3s);
+}
+
+.destination-card {
+    animation: fadeInUp 0.5s ease forwards;
+    animation-play-state: paused;
+}
+
+.destination-card.in-view {
+    animation-play-state: running;
+}
+
+.map-marker.active {
+    animation: pulseGlow 1.5s infinite;
+}
+
+/* Base (mobile) styles first */
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.left-panel {
+    width: 100%;
+    height: auto;
+}
+
+.right-panel {
+    width: 100%;
+    height: 350px;
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .container {
+        flex-direction: row;
+    }
+    
+    .left-panel {
+        width: 320px;
+        height: calc(100vh - 64px);
+        overflow-y: auto;
+    }
+    
+    .right-panel {
+        flex: 1;
+        height: calc(100vh - 64px);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1200px) {
+    .container {
+        flex-direction: row;
+    }
+    
+    .left-panel {
+        width: 380px;
+        height: calc(100vh - 64px);
+        overflow-y: auto;
+    }
+    
+    .right-panel {
+        flex: 1;
+        height: calc(100vh - 64px);
+    }
+}
