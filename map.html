@@ -193,19 +193,19 @@
                         <button class="search-btn"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
-                <div class="sidebar-filters">
-                    <div class="filter-group">
+                <div class="sidebar-filters compact-filters">
+                    <div class="filter-group compact-group">
                         <span class="filter-label"><i class="fas fa-globe"></i> Region</span>
-                        <div class="region-filters"></div>
+                        <div class="region-filters compact-region-filters"></div>
                     </div>
-                    <div class="filter-group">
+                    <div class="filter-group compact-group">
                         <span class="filter-label"><i class="fas fa-fire"></i> Quick Filters</span>
                         <button class="quick-filter active">Popular</button>
                         <button class="quick-filter">Recent</button>
                         <button class="quick-filter">Saved</button>
                     </div>
                 </div>
-                <div class="sidebar-destinations">
+                <div class="sidebar-destinations expanded-destinations">
                     <div class="destinations-header">
                         <span class="dest-count">Destinations</span>
                         <select class="sort-select">
@@ -214,8 +214,17 @@
                             <option value="recent">Recently Added</option>
                         </select>
                     </div>
-                    <div class="destination-list-virtualized">
-                        <!-- Destination cards will be rendered here by JS -->
+                    <div class="destination-list-virtualized vertical-card-list">
+                        <!-- Example destination cards (saved.html style) -->
+                        <div class="destination-card vertical-card">
+                            <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Bali" class="card-image">
+                            <div class="card-overlay"></div>
+                            <button class="favorite-button"><i class="fas fa-heart"></i></button>
+                            <div class="card-rating"><i class="fas fa-star star-icon"></i><span class="rating-score">4.5</span></div>
+                            <h3 class="card-title">Bali, Indonesia</h3>
+                            <div class="card-location"><i class="fas fa-map-marker-alt"></i><span>Indonesia, Asia</span></div>
+                        </div>
+                        <!-- More cards would be rendered here by JS -->
                     </div>
                 </div>
             </aside>
